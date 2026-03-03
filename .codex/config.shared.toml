@@ -1,0 +1,40 @@
+model = "gpt-5.3-codex"
+
+[notice.model_migrations]
+"gpt-5.2-codex" = "gpt-5.3-codex"
+
+# Github MCP setting
+experimental_use_rmcp_client = "true"
+
+[mcp_servers.github-mcp-server]
+url = "https://api.githubcopilot.com/mcp"
+bearer_token_env_var = "GITHUB_MCP_API_TOKEN"
+
+# Backlog MCP setting
+# [mcp_servers.backlog]
+# command = "docker"
+# args = ["run", "--pull", "always", "-i", "--rm", "-e", "BACKLOG_DOMAIN", "-e", "BACKLOG_API_KEY", "ghcr.io/nulab/backlog-mcp-server:latest"]
+# Set credentials in your shell environment before starting Codex.
+# export BACKLOG_DOMAIN="your-space.backlog.com"
+# export BACKLOG_API_KEY="your-api-key"
+
+# drawio MCP setting
+[mcp_servers.drawio]
+command = "npx"
+args = ["-y", "@drawio/mcp@latest"]
+
+# Docker MCP setting
+[mcp_servers.docker]
+name = "docker"
+command = "docker"
+args = ["mcp", "gateway", "run"]
+
+# chrome-devtools setting
+[mcp_servers.chrome-devtools]
+command = "npx"
+args = ["-y", "chrome-devtools-mcp@latest"]
+
+# playwright MCP setting
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@latest"]
