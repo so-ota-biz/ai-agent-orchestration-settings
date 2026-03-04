@@ -157,8 +157,8 @@ allow_login_shell = false  # ログインシェルを強制的に無効化
 | **設定形式** | JSON | TOML | JSON |
 | **全自動承認防止** | `disableBypassPermissionsMode: "disable"` | `approval_policy = "untrusted"` | `security.disableYoloMode: true` |
 | **プロジェクトMCP自動承認防止** | `enableAllProjectMcpServers: false` | `trust_level = "untrusted"` | プロジェクト設定は自動承認されない |
-| **ネットワーク制限** | `sandbox.network.allowedDomains: []` | `network_access = false` | `tools.sandbox: true` |
-| **機密ファイル保護** | `permissions.deny: ["Read(~/.ssh/**)"]` | 環境変数除外 + サンドボックス | `security.allowedExtensions` (拡張子制限) |
+| **ネットワーク制限** | `sandbox.network.allowedDomains: []` | `network_access = false` | `tools.exclude` (curl/wget/nc等を禁止) |
+| **機密ファイル保護** | `permissions.deny: ["Read(~/.ssh/**)"]` | 環境変数除外 + サンドボックス | サンドボックス + 環境変数マスキング |
 | **環境変数保護** | `sandbox.filesystem.denyRead` | `shell_environment_policy.exclude` | `security.environmentVariableRedaction` |
 | **コンテキストファイル** | CLAUDE.md | AGENTS.md | GEMINI.md |
 

@@ -103,7 +103,7 @@ bash /path/to/ai-agent-orchestration-settings/scripts/check-and-cleanup.sh
 
 このスクリプトは以下を実行します：
 
-1. **チェック対象**: 作成予定のシンボリックリンク先（`~/.codex/skills`, `~/.claude/commands` など）
+1. **チェック対象**: 作成予定のシンボリックリンク先（`~/.codex/skills`, `~/.claude/commands`, `~/.gemini/GEMINI.md`, `~/.gemini/settings.json` など）
 2. **判定ロジック**:
    - 存在しない → ✓ OK（そのままリンク作成可能）
    - シンボリックリンク → ⚠ 削除可能（確認後に自動削除）
@@ -129,6 +129,10 @@ ls -la ~/.claude/CLAUDE.md
 ls -la ~/.claude/skills
 ls -la ~/.claude/commands
 ls -la ~/.claude/settings.json
+ls -la ~/.gemini/GEMINI.md
+ls -la ~/.gemini/skills
+ls -la ~/.gemini/commands
+ls -la ~/.gemini/settings.json
 ls -la ~/.local/bin/sync-codex-config
 ```
 
@@ -380,17 +384,34 @@ sync-codex-config
 
 エラーなく実行でき、`~/.codex/config.toml` が生成または更新されていれば成功です。
 
-#### Codex / Claude / Gemini での動作確認
+#### CLI 動作確認
 
 ```bash
-# Codex でスキルが認識されているか確認
+# Codex の起動確認
 codex --help
 
-# Claude Code でスキルが認識されているか確認
+# Claude Code の起動確認
 claude --help
 
-# Gemini CLI でスキルが認識されているか確認
+# Gemini CLI の起動確認
 gemini --help
+```
+
+#### スキル・コマンド認識の確認
+
+シンボリックリンクが正しく作成されているか確認：
+
+```bash
+# Codex のプロンプト（コマンド）ディレクトリを確認
+ls -la ~/.codex/prompts
+
+# Claude Code のコマンドディレクトリを確認
+ls -la ~/.claude/commands
+
+# Gemini CLI のコマンドディレクトリを確認
+ls -la ~/.gemini/commands
+
+# いずれも .agent/commands へのシンボリックリンクになっているはず
 ```
 
 ## 設計思想
