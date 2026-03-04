@@ -192,6 +192,8 @@ ln -s /path/to/ai-agent-orchestration-settings/.agent/commands ~/.claude/command
 
 #### Claude Code のセキュリティ設定
 
+**Unix/Linux/macOS の場合:**
+
 ```bash
 # 例: ホームディレクトリにクローンした場合
 ln -s ~/ai-agent-orchestration-settings/.claude/settings.json ~/.claude/settings.json
@@ -199,6 +201,32 @@ ln -s ~/ai-agent-orchestration-settings/.claude/settings.json ~/.claude/settings
 # 絶対パスで指定する場合
 ln -s /path/to/ai-agent-orchestration-settings/.claude/settings.json ~/.claude/settings.json
 ```
+
+**Windows (PowerShell) の場合:**
+
+```powershell
+# 例: ホームディレクトリにクローンした場合（管理者権限不要）
+New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.claude\settings.json" -Value "$env:USERPROFILE\ai-agent-orchestration-settings\.claude\settings.json"
+
+# 絶対パスで指定する場合
+New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.claude\settings.json" -Value "C:\path\to\ai-agent-orchestration-settings\.claude\settings.json"
+```
+
+**Windows (コマンドプロンプト) の場合:**
+
+```cmd
+:: 管理者権限で実行
+:: 例: ホームディレクトリにクローンした場合
+mklink "%USERPROFILE%\.claude\settings.json" "%USERPROFILE%\ai-agent-orchestration-settings\.claude\settings.json"
+
+:: 絶対パスで指定する場合
+mklink "%USERPROFILE%\.claude\settings.json" "C:\path\to\ai-agent-orchestration-settings\.claude\settings.json"
+```
+
+**注意**:
+- PowerShell の場合、通常は管理者権限は不要ですが、環境によっては必要な場合があります
+- コマンドプロンプトの `mklink` は管理者権限が必要です
+- Windows でシンボリックリンクが作成できない場合は、ファイルを直接コピーする方法もあります（ただし、リポジトリの変更が自動反映されません）
 
 **設定内容**:
 - パーミッションバイパスモードの無効化

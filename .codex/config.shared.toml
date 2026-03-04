@@ -52,7 +52,11 @@ exclude = [
 ]
 
 # Github MCP setting
-experimental_use_rmcp_client = "true"
+# 注意: experimental_use_rmcp_client は廃止予定。新しい [features] 形式を推奨
+# experimental_use_rmcp_client = true  # 旧形式（廃止予定）
+
+[features]
+rmcp_client = true  # 推奨: Rust-based MCP クライアントを使用
 
 [mcp_servers.github-mcp-server]
 url = "https://api.githubcopilot.com/mcp"
