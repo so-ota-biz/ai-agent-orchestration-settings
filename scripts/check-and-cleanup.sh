@@ -25,6 +25,10 @@ PATHS_TO_CHECK=(
     "$HOME/.claude/skills"
     "$HOME/.claude/commands"
     "$HOME/.claude/settings.json"
+    "$HOME/.gemini/GEMINI.md"
+    "$HOME/.gemini/skills"
+    "$HOME/.gemini/commands"
+    "$HOME/.gemini/settings.json"
     "$HOME/.local/bin/sync-codex-config"
 )
 
