@@ -16,6 +16,22 @@ Claude Code、Codex CLI と同様のセキュリティポリシーを Gemini CLI
 
 ## 設定内容
 
+### 一般設定（general）
+
+#### `defaultApprovalMode`
+```json
+"defaultApprovalMode": "default"
+```
+
+**承認モード:**
+- `default`: 通常モード（各ツールで確認） - **推奨**
+- `auto_edit`: 編集操作は自動承認
+- `plan`: プランモード（実行前に計画を確認、読み取り専用）
+
+**推奨**: `default`（最も安全）
+
+---
+
 ### セキュリティ設定（security）
 
 #### `disableYoloMode`
@@ -58,19 +74,6 @@ YOLO モード（全ツール自動承認）を無効化します。すべての
 **機密環境変数の自動マスキング:**
 - ツール実行時に機密情報を含む環境変数を自動的にマスク
 - パターンマッチングで柔軟に対応
-
----
-
-#### `allowedExtensions`
-```json
-"allowedExtensions": [
-  "^(?!.*\\.(env|pem|key|pfx|p12|jks|keystore|crt|cer)$).*"
-]
-```
-
-**機密ファイルの拡張子制限:**
-- `.env`, `.pem`, `.key` などの機密ファイルへのアクセスを制限
-- 正規表現で柔軟に制御可能
 
 ---
 
@@ -195,7 +198,11 @@ Codex の `.codex/config.shared.toml` を参考に追加可能です。
 
 **シンボリックリンク設定:**
 ```bash
-ln -s ~/.agent/AGENTS.md ~/.gemini/GEMINI.md
+# リポジトリローカルのパスを使用
+ln -s ~/ai-agent-orchestration-settings/.agent/AGENTS.md ~/.gemini/GEMINI.md
+
+# または絶対パスで
+ln -s /path/to/ai-agent-orchestration-settings/.agent/AGENTS.md ~/.gemini/GEMINI.md
 ```
 
 #### `fileFiltering.respectGitIgnore`
@@ -209,8 +216,9 @@ ln -s ~/.agent/AGENTS.md ~/.gemini/GEMINI.md
 "model": {
   "maxSessionTurns": 50,
   "summarizeToolOutput": {
-    "BashCommand": 10000,
-    "Read": 20000
+    "run_shell_command": {
+      "tokenBudget": 10000
+    }
   }
 }
 ```
@@ -220,8 +228,8 @@ ln -s ~/.agent/AGENTS.md ~/.gemini/GEMINI.md
 
 #### `summarizeToolOutput`
 ツール出力の要約トークン制限:
-- `BashCommand`: 10000トークン
-- `Read`: 20000トークン
+- `run_shell_command`: シェルコマンド出力の最大保持トークン数（10000トークン）
+- コンテキストウィンドウ管理のため、冗長なコマンド出力を制限
 
 ---
 
@@ -273,21 +281,6 @@ MCP サーバーの使用: `true`（有効化）
 
 - コンテキストサマリーを表示
 - アプリケーションバナーを表示
-
----
-
-### デフォルト承認モード
-
-```json
-"defaultApprovalMode": "default"
-```
-
-**承認モード:**
-- `default`: 通常モード（各ツールで確認）
-- `auto_edit`: 編集操作は自動承認
-- `plan`: プランモード（実行前に計画を確認）
-
-**推奨**: `default`（最も安全）
 
 ---
 
