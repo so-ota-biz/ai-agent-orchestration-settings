@@ -73,6 +73,8 @@
       "Bash(git merge *)",
       "Bash(git pull *)",
       "Bash(git rebase *)",
+      "Bash(git tag -f *)",
+      "Bash(git push --delete *)",
 
       "// 設定ファイルの書き込み",
       "Write(package.json)",
