@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+# CodeRabbit 設定ファイル
+# すべてのレビューコメントを日本語で出力します
+
+# レビュー言語を日本語に設定
+language: "ja-JP"
+
+# 早期アクセス機能を無効化（安定版のみ使用）
+early_access: false
+
+# レビュー設定
+reviews:
+  # レビュープロファイル: "chill" = 重要な問題のみ指摘
+  profile: "chill"
+
+  # 変更リクエストワークフローを有効化
+  request_changes_workflow: true
+
+  # 高レベルサマリーを有効化
+  high_level_summary: true
+
+  # ポエムを有効化（レビュー終了時の詩）
+  poem: true
+
+  # レビューステータスを表示
+  review_status: true
+
+  # 自動レビューを有効化
+  auto_review:
+    enabled: true
+    # ドラフトPRも自動レビュー対象にする
+    drafts: true
+
+  # レビュー対象から除外するパス
+  path_filters:
+    - "!**/*.md"  # Markdownファイルは除外しない（ドキュメント重要）
+    - "!**/*.json"  # JSON設定ファイルは除外しない
+    - "!**/*.yaml"
+    - "!**/*.yml"
+    - "!**/*.toml"
+
+  # レビュー対象から除外するパターン（不要なファイル）
+  path_instructions:
+    - path: "**/*.lock"
+      instructions: "ロックファイルは自動生成されるため、レビューをスキップしてください。"
+    - path: "**/*.log"
+      instructions: "ログファイルはレビューをスキップしてください。"
+
+# チャット設定
+chat:
+  # チャット機能を有効化
+  auto_reply: true
