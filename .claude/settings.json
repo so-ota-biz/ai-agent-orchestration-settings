@@ -32,7 +32,6 @@
       "Bash(git push --force *)",
       "Bash(git push -f *)",
       "Bash(git clean -fd *)",
-      "Bash(git rebase *)",
 
       "// 危険なファイル操作の拒否",
       "Bash(rm -rf *)",
@@ -73,6 +72,9 @@
       "Bash(git push *)",
       "Bash(git merge *)",
       "Bash(git pull *)",
+      "Bash(git rebase *)",
+      "Bash(git tag -f *)",
+      "Bash(git push --delete *)",
 
       "// 設定ファイルの書き込み",
       "Write(package.json)",
@@ -112,13 +114,11 @@
       "Bash(grep *)",
       "Bash(find *)",
       "Bash(mkdir *)",
-      "Bash(touch *)",
-
-      "// 編集・書き込み（機密ファイル以外）",
-      "Edit",
-      "Write"
+      "Bash(touch *)"
     ]
   },
+
+  "// 注意": "Edit と Write は包括許可せず、個別に ask ルールで管理します。deny/ask で指定されていないファイル操作はデフォルトで ask になります。",
 
   "// MCP SERVER SETTINGS": "MCP サーバー設定",
   "enableAllProjectMcpServers": false,
