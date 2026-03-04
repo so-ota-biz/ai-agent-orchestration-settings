@@ -1,6 +1,10 @@
 #!/bin/bash
-
+# -*- coding: utf-8 -*-
+#
 # シンボリックリンクを貼る前に、既存の設定をチェック＆クリーンアップするスクリプト
+#
+# 前提: UTF-8 ロケール（ja_JP.UTF-8, en_US.UTF-8 など）
+# 文字化けする場合: export LANG=ja_JP.UTF-8 または export LANG=en_US.UTF-8
 
 set -e
 
@@ -20,6 +24,7 @@ PATHS_TO_CHECK=(
     "$HOME/.claude/CLAUDE.md"
     "$HOME/.claude/skills"
     "$HOME/.claude/commands"
+    "$HOME/.claude/settings.json"
     "$HOME/.local/bin/sync-codex-config"
 )
 

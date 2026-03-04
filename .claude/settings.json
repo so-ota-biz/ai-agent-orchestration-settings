@@ -1,0 +1,127 @@
+{
+  "$schema": "https://code.claude.com/schemas/settings.json",
+
+  "permissions": {
+    "disableBypassPermissionsMode": "disable",
+
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.config/gcloud/**)",
+      "Write(./.env)",
+      "Write(./.env.*)",
+      "Write(./secrets/**)",
+      "Write(~/.ssh/**)",
+
+      "Bash(git reset --hard *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git clean -fd *)",
+
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(sudo rm *)",
+
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(nc *)",
+      "Bash(netcat *)"
+    ],
+
+    "ask": [
+      "Bash(npm install *)",
+      "Bash(npm uninstall *)",
+      "Bash(yarn add *)",
+      "Bash(yarn remove *)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm remove *)",
+      "Bash(pip install *)",
+      "Bash(pip uninstall *)",
+
+      "Bash(psql *)",
+      "Bash(mysql *)",
+      "Bash(mongosh *)",
+
+      "Bash(docker rm *)",
+      "Bash(docker rmi *)",
+      "Bash(docker system prune *)",
+
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git merge *)",
+      "Bash(git pull *)",
+      "Bash(git rebase *)",
+      "Bash(git tag -f *)",
+      "Bash(git push --delete *)",
+
+      "Write(package.json)",
+      "Write(tsconfig.json)",
+      "Write(.gitignore)",
+      "Write(Dockerfile)",
+      "Write(docker-compose.yml)"
+    ],
+
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+
+      "Bash(git status)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git show *)",
+      "Bash(git branch)",
+      "Bash(git remote -v)",
+
+      "Bash(npm run *)",
+      "Bash(yarn run *)",
+      "Bash(pnpm run *)",
+      "Bash(npm test)",
+      "Bash(npm run test)",
+
+      "Bash(ls *)",
+      "Bash(pwd)",
+      "Bash(echo *)",
+      "Bash(cat *)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(mkdir *)",
+      "Bash(touch *)"
+    ]
+  },
+
+  "enableAllProjectMcpServers": false,
+
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": "120000",
+    "BASH_MAX_TIMEOUT_MS": "600000",
+    "BASH_MAX_OUTPUT_LENGTH": "30000",
+    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "true"
+  },
+
+  "sandbox": {
+    "enabled": false,
+    "autoAllowBashIfSandboxed": false,
+    "filesystem": {
+      "denyWrite": [
+        "~/.ssh",
+        "~/.aws",
+        "~/.config/gcloud"
+      ],
+      "denyRead": [
+        "~/.ssh/id_rsa",
+        "~/.ssh/id_ed25519",
+        "~/.aws/credentials"
+      ]
+    },
+    "network": {
+      "allowedDomains": []
+    }
+  },
+
+  "respectGitignore": true,
+  "defaultMode": "ask"
+}

@@ -1,10 +1,63 @@
+# ========================================
+# Codex CLI 共有設定ファイル
+# ========================================
+# 参考: https://developers.openai.com/codex/security/
+# 参考: https://zenn.dev/ytksato/articles/057dc7c981d304
+# ========================================
+
 model = "gpt-5.3-codex"
 
 [notice.model_migrations]
 "gpt-5.2-codex" = "gpt-5.3-codex"
 
+# ========================================
+# セキュリティ設定（安全寄り・慎重運用）
+# ========================================
+
+# 承認ポリシー: すべての操作に承認が必要
+# "untrusted" = 最も安全（推奨）
+# "on-request" = バランス型
+# "never" = 危険（使用非推奨）
+approval_policy = "untrusted"
+
+# サンドボックスモード: プロジェクト領域への書き込みのみ許可
+# "read-only" = 読み取り専用
+# "workspace-write" = プロジェクト領域への書き込みを許可（推奨）
+# "danger-full-access" = すべてのアクセスを許可（危険、使用非推奨）
+sandbox_mode = "workspace-write"
+
+# ワークスペース書き込みモードの詳細設定
+[sandbox_workspace_write]
+# ネットワークアクセスをデフォルトで無効化
+# プロジェクト固有で必要な場合のみ、プロジェクトの .codex/config.toml で有効化
+network_access = false
+
+# ログインシェルの使用を禁止（セキュリティ強化）
+allow_login_shell = false
+
+# シェル環境変数のポリシー
+[shell_environment_policy]
+# 環境変数の継承レベル: 最小限のみ継承
+inherit = "core"
+
+# 機密情報を含む環境変数を除外
+exclude = [
+  "AWS_*",
+  "GITHUB_TOKEN",
+  "GITHUB_MCP_API_TOKEN",
+  "OPENAI_API_KEY",
+  "*_SECRET",
+  "*_PASSWORD",
+  "*_API_KEY",
+  "*_PRIVATE_KEY"
+]
+
 # Github MCP setting
-experimental_use_rmcp_client = "true"
+# 注意: experimental_use_rmcp_client は廃止予定。新しい [features] 形式を推奨
+# experimental_use_rmcp_client = true  # 旧形式（廃止予定）
+
+[features]
+rmcp_client = true  # 推奨: Rust-based MCP クライアントを使用
 
 [mcp_servers.github-mcp-server]
 url = "https://api.githubcopilot.com/mcp"
