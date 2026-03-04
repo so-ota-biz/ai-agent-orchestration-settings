@@ -36,7 +36,7 @@ ai-agent-orchestration-settings/
 ### 1. クローン
 
 ```bash
-git clone git@github.com:so-ota-biz/ai-agent-orchestration-settings.git
+git clone https://github.com/so-ota-biz/ai-agent-orchestration-settings.git
 ```
 
 ### 2. スクリプトの実行権限確認（重要）
