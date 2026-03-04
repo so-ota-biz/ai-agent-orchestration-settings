@@ -6,15 +6,16 @@
 
 ```
 ai-agent-orchestration-settings/
-├── .agent/                    # 共通リソース
-│   ├── AGENTS.md              # 共通ルール
-│   ├── skills/                # 共通スキル（Codex/Claude両対応）
-│   └── commands/              # 共通カスタムコマンド（Codex/Claude両対応）
+├── .agent/                      # 共通リソース
+│   ├── AGENTS.md                # 共通ルール
+│   ├── skills/                  # 共通スキル（Codex/Claude両対応）
+│   └── commands/                # 共通カスタムコマンド（Codex/Claude両対応）
 ├── .codex/
-│   └── config.shared.toml     # Codex固有の共有設定
-├── prompts/                   # 人間向けドキュメント用
+│   └── config.shared.toml       # Codex固有の共有設定
+├── prompts/                     # 人間向けドキュメント用
 └── scripts/
-    └── sync-codex-config.sh   # Codex設定同期スクリプト
+    ├── check-and-cleanup.sh     # クリーンアップ確認スクリプト
+    └── sync-codex-config.sh     # Codex設定同期スクリプト
 ```
 
 ## 使い方
@@ -45,7 +46,71 @@ export PATH="$HOME/.local/bin:$PATH"
 source ~/.bashrc  # または source ~/.zshrc
 ```
 
-### 4. 共通リソースのリンク
+### 4. クリーンアップ確認（重要）
+
+シンボリックリンクを作成する前に、既存の設定との衝突を確認・解消します。
+
+#### 自動チェックスクリプトの実行（推奨）
+
+```bash
+# 例: ホームディレクトリにクローンした場合
+bash ~/ai-agent-orchestration-settings/scripts/check-and-cleanup.sh
+
+# 絶対パスで指定する場合
+bash /path/to/ai-agent-orchestration-settings/scripts/check-and-cleanup.sh
+```
+
+このスクリプトは以下を実行します：
+
+1. **チェック対象**: 作成予定のシンボリックリンク先（`~/.codex/skills`, `~/.claude/commands` など）
+2. **判定ロジック**:
+   - 存在しない → ✓ OK（そのままリンク作成可能）
+   - シンボリックリンク → ⚠ 削除可能（確認後に自動削除）
+   - 空のディレクトリ → ⚠ 削除可能（確認後に自動削除）
+   - 空でないディレクトリ → ✗ 手動整理が必要（警告して停止）
+   - ファイル → ✗ 手動整理が必要（警告して停止）
+
+3. **結果**:
+   - すべてクリーンな場合 → 次のステップへ進める
+   - 自動削除可能な項目がある場合 → 確認後に削除
+   - 手動整理が必要な場合 → 該当パスを表示して停止
+
+#### 手動確認（スクリプトを使わない場合）
+
+以下のパスを手動で確認してください：
+
+```bash
+ls -la ~/.codex/AGENTS.md
+ls -la ~/.codex/skills
+ls -la ~/.codex/prompts
+ls -la ~/.codex/config.shared.toml
+ls -la ~/.claude/CLAUDE.md
+ls -la ~/.claude/skills
+ls -la ~/.claude/commands
+ls -la ~/.local/bin/sync-codex-config
+```
+
+**既存のファイル・ディレクトリがある場合の対処:**
+
+```bash
+# シンボリックリンクや空ディレクトリの削除
+rm ~/.codex/skills
+# または
+rmdir ~/.codex/skills
+
+# 空でないディレクトリの場合は、内容を確認して手動で整理
+ls -la ~/.codex/skills
+# バックアップを取るなど、必要に応じて対処
+mv ~/.codex/skills ~/.codex/skills.backup
+```
+
+**重要**: 空でないディレクトリがある場合、既存の設定が存在します。必要に応じてバックアップを取り、内容を確認してから削除してください。
+
+---
+
+クリーンアップが完了したら、次のステップに進んでください。
+
+### 5. 共通リソースのリンク
 
 `.agent` 配下の共通リソースを Codex と Claude Code の両方にリンクします。
 
@@ -87,7 +152,7 @@ ln -s /path/to/ai-agent-orchestration-settings/.agent/commands ~/.claude/command
 
 **注意:** Codex では `prompts` ディレクトリ、Claude Code では `commands` ディレクトリとして認識されますが、実体は同じ `.agent/commands` を参照します。
 
-### 5. Codex 固有の設定
+### 6. Codex 固有の設定
 
 #### 共有設定ファイルのリンク
 
@@ -127,7 +192,7 @@ chmod +x /path/to/ai-agent-orchestration-settings/scripts/sync-codex-config.sh
 sync-codex-config
 ```
 
-### 6. 環境変数（必要なもののみ）
+### 7. 環境変数（必要なもののみ）
 
 例: GitHub MCP / Backlog MCP を使う場合
 
@@ -139,7 +204,7 @@ export BACKLOG_API_KEY="..."
 
 永続化する場合は `~/.bashrc` や `~/.zshrc` に追記してください。
 
-### 7. 検証
+### 8. 検証
 
 設定が正しく反映されているか確認します。
 
