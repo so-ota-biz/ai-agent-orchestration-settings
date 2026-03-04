@@ -1,0 +1,112 @@
+{
+  "$schema": "https://raw.githubusercontent.com/google-gemini/gemini-cli/main/schemas/settings.schema.json",
+
+  "security": {
+    "disableYoloMode": true,
+    "enablePermanentToolApproval": false,
+    "environmentVariableRedaction": {
+      "enabled": true,
+      "redactedVariablePatterns": [
+        ".*TOKEN.*",
+        ".*SECRET.*",
+        ".*PASSWORD.*",
+        ".*KEY.*",
+        ".*AUTH.*",
+        ".*CREDENTIAL.*",
+        ".*PRIVATE.*",
+        ".*CERT.*"
+      ]
+    },
+    "allowedExtensions": [
+      "^(?!.*\\.(env|pem|key|pfx|p12|jks|keystore|crt|cer)$).*"
+    ]
+  },
+
+  "tools": {
+    "sandbox": true,
+    "allowed": [
+      "Read",
+      "Glob",
+      "Grep",
+      "BashCommand(git status)",
+      "BashCommand(git log *)",
+      "BashCommand(git diff *)",
+      "BashCommand(git show *)",
+      "BashCommand(git branch)",
+      "BashCommand(git remote -v)",
+      "BashCommand(ls *)",
+      "BashCommand(pwd)",
+      "BashCommand(echo *)",
+      "BashCommand(cat *)",
+      "BashCommand(grep *)",
+      "BashCommand(find *)",
+      "BashCommand(mkdir *)",
+      "BashCommand(touch *)"
+    ],
+    "exclude": [
+      "BashCommand(rm -rf *)",
+      "BashCommand(rm -fr *)",
+      "BashCommand(sudo rm *)",
+      "BashCommand(git reset --hard *)",
+      "BashCommand(git push --force *)",
+      "BashCommand(git push -f *)",
+      "BashCommand(git clean -fd *)",
+      "BashCommand(curl *)",
+      "BashCommand(wget *)",
+      "BashCommand(nc *)",
+      "BashCommand(netcat *)"
+    ],
+    "shell": {
+      "enableInteractiveShell": false,
+      "inactivityTimeout": 120
+    },
+    "truncateToolOutputThreshold": 30000
+  },
+
+  "mcpServers": {
+    "github-mcp-server": {
+      "url": "https://api.githubcopilot.com/mcp",
+      "env": {
+        "GITHUB_MCP_API_TOKEN": "$GITHUB_MCP_API_TOKEN"
+      },
+      "trust": false,
+      "timeout": 30000
+    }
+  },
+
+  "context": {
+    "fileName": "GEMINI.md",
+    "fileFiltering": {
+      "respectGitIgnore": true
+    }
+  },
+
+  "model": {
+    "maxSessionTurns": 50,
+    "summarizeToolOutput": {
+      "BashCommand": 10000,
+      "Read": 20000
+    }
+  },
+
+  "admin": {
+    "secureModeEnabled": true,
+    "extensions": {
+      "enabled": false
+    },
+    "mcp": {
+      "enabled": true
+    }
+  },
+
+  "privacy": {
+    "usageStatisticsEnabled": false
+  },
+
+  "ui": {
+    "hideContextSummary": false,
+    "hideBanner": false
+  },
+
+  "defaultApprovalMode": "default"
+}
