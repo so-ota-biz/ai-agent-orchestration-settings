@@ -1,18 +1,28 @@
-# Codex CLI 安全設定ガイド
+# Codex CLI Settings ガイド
 
-## 概要
+このドキュメントは `.codex/config.shared.toml` の設定内容を説明します。
 
-Codex CLIはClaude Codeと異なる設定方式を採用していますが、同等の安全性を確保できます。
+## 参考資料
+
+- [Codex CLI Security](https://developers.openai.com/codex/security/)
+- [Codex CLI Configuration Reference](https://developers.openai.com/codex/config-reference/)
+- [Claude Codeを安全に使うためのTips](https://zenn.dev/ytksato/articles/057dc7c981d304)
+
+## 設計思想
+
+**安全寄り・慎重運用を基本とし、攻撃コストを高める設計**
+
+Codex CLIはClaude Code、Gemini CLIと異なる設定方式（TOML形式）を採用していますが、同等の安全性を確保できます。
 本ガイドでは、Claude Codeの安全設定（`.claude/settings.json`）と同等の保護レベルをCodexで実現する方法を説明します。
 
-## Codex のセキュリティレイヤー
+## 設定内容
+
+### Codex のセキュリティレイヤー
 
 Codex は2層のセキュリティ制御を提供します：
 
 1. **サンドボックスモード（Sandbox Mode）**: 技術的なアクセス制限（ファイル書き込み、ネットワークアクセス）
 2. **承認ポリシー（Approval Policy）**: エージェントが実行前に確認を求めるタイミング
-
-## 推奨設定: 安全寄り・慎重運用
 
 ### ~/.codex/config.toml の推奨設定
 
@@ -79,6 +89,10 @@ exclude = [
 # enabled = false
 ```
 
+---
+
+## 設定のカスタマイズ
+
 ### プロジェクト固有の設定（.codex/config.toml）
 
 プロジェクトごとに必要な設定を `.codex/config.toml` で上書きできます。
@@ -97,7 +111,11 @@ command = "npx"
 args = ["-y", "some-mcp-server"]
 ```
 
-## 管理者向け: 要件ファイル（requirements.toml）
+---
+
+## 管理者向け設定
+
+### 要件ファイル（requirements.toml）
 
 企業環境や複数ユーザーで安全性を強制する場合、`requirements.toml` を使用します。
 このファイルはユーザーが上書きできない制約を定義します。
@@ -130,15 +148,21 @@ allow_login_shell = false  # ログインシェルを強制的に無効化
 # allowed_web_search_modes = ["cached"]  # ライブ検索を禁止
 ```
 
-## Claude Code との対応表
+---
 
-| 設定項目 | Claude Code (settings.json) | Codex CLI (config.toml) |
-|---------|----------------------------|------------------------|
-| パーミッションバイパス無効化 | `permissions.disableBypassPermissionsMode: "disable"` | `approval_policy = "untrusted"` |
-| プロジェクトMCPの自動承認防止 | `enableAllProjectMcpServers: false` | `trust_level = "untrusted"` (プロジェクトごと) |
-| ネットワークアクセス制限 | `sandbox.network.allowedDomains: []` | `sandbox_workspace_write.network_access = false` |
-| 機密ファイルの保護 | `permissions.deny: ["Read(~/.ssh/**)"]` | 環境変数除外 + サンドボックス |
-| Bashタイムアウト | `BASH_DEFAULT_TIMEOUT_MS` | MCPサーバーの `timeout_ms` |
+## Claude Code / Gemini CLI との比較
+
+| 設定項目 | Claude Code | Codex CLI | Gemini CLI |
+|---------|------------|-----------|-----------|
+| **設定形式** | JSON | TOML | JSON |
+| **全自動承認防止** | `disableBypassPermissionsMode: "disable"` | `approval_policy = "untrusted"` | `security.disableYoloMode: true` |
+| **プロジェクトMCP自動承認防止** | `enableAllProjectMcpServers: false` | `trust_level = "untrusted"` | プロジェクト設定は自動承認されない |
+| **ネットワーク制限** | `sandbox.network.allowedDomains: []` | `network_access = false` | `tools.sandbox: true` |
+| **機密ファイル保護** | `permissions.deny: ["Read(~/.ssh/**)"]` | 環境変数除外 + サンドボックス | `security.allowedExtensions` (拡張子制限) |
+| **環境変数保護** | `sandbox.filesystem.denyRead` | `shell_environment_policy.exclude` | `security.environmentVariableRedaction` |
+| **コンテキストファイル** | CLAUDE.md | AGENTS.md | GEMINI.md |
+
+---
 
 ## 安全性チェックリスト
 
@@ -150,6 +174,8 @@ allow_login_shell = false  # ログインシェルを強制的に無効化
 - [ ] 機密情報を含む環境変数を `shell_environment_policy.exclude` で除外
 - [ ] 信頼していないプロジェクトは `trust_level = "untrusted"` に設定
 - [ ] 不要なMCPサーバーは無効化
+
+---
 
 ## トラブルシューティング
 
@@ -172,9 +198,3 @@ network_access = true
 
 1. プロジェクトを信頼する: `codex trust /path/to/project`
 2. ユーザー設定（`~/.codex/config.toml`）でMCPサーバーを定義
-
-## 参考資料
-
-- [Codex CLI Security](https://developers.openai.com/codex/security/)
-- [Codex CLI Configuration Reference](https://developers.openai.com/codex/config-reference/)
-- [Claude Codeを安全に使うためのTips](https://zenn.dev/ytksato/articles/057dc7c981d304)

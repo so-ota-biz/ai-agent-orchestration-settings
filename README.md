@@ -22,7 +22,7 @@ ai-agent-orchestration-settings/
 │   ├── claude/
 │   │   └── SETTINGS_GUIDE.md    # Claude Code 設定ガイド
 │   ├── codex/
-│   │   └── SECURITY_GUIDE.md    # Codex セキュリティ設定ガイド
+│   │   └── SETTINGS_GUIDE.md    # Codex CLI 設定ガイド
 │   └── gemini/
 │       └── SETTINGS_GUIDE.md    # Gemini CLI 設定ガイド
 ├── prompts/                     # 人間向けドキュメント用
@@ -260,7 +260,7 @@ Codex は `.codex/config.shared.toml` にセキュリティ設定が含まれて
 - ネットワークアクセス: デフォルトで無効
 - 機密環境変数の除外
 
-詳細なガイドは `docs/codex/SECURITY_GUIDE.md` を参照してください。
+詳細は `docs/codex/SETTINGS_GUIDE.md` を参照してください。
 
 #### Gemini CLI のセキュリティ設定
 
