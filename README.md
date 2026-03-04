@@ -14,11 +14,13 @@ ai-agent-orchestration-settings/
 │       └── notify.sh            # クロスプラットフォーム通知スクリプト
 ├── .claude/
 │   └── settings.json            # Claude Code セキュリティ設定
-├── .codex/
-│   └── config.shared.toml       # Codex 共有設定（セキュリティ設定含む）
 ├── docs/
+│   ├── claude/
+│   │   └── SETTINGS_GUIDE.md    # Claude Code 設定ガイド
 │   └── codex/
 │       └── SECURITY_GUIDE.md    # Codex セキュリティ設定ガイド
+├── .codex/
+│   └── config.shared.toml       # Codex 共有設定（セキュリティ設定含む）
 ├── prompts/                     # 人間向けドキュメント用
 └── scripts/
     ├── check-and-cleanup.sh     # クリーンアップ確認スクリプト
@@ -235,7 +237,7 @@ mklink "%USERPROFILE%\.claude\settings.json" "C:\path\to\ai-agent-orchestration-
 - 危険なファイル操作の拒否（`rm -rf`など）
 - ネットワーク経由の任意コード実行防止
 
-詳細は `.claude/settings.json` を参照してください。
+詳細は `docs/claude/SETTINGS_GUIDE.md` を参照してください。
 
 #### Codex のセキュリティ設定
 
