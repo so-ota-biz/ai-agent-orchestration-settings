@@ -9,9 +9,16 @@ ai-agent-orchestration-settings/
 ├── .agent/                      # 共通リソース
 │   ├── AGENTS.md                # 共通ルール
 │   ├── skills/                  # 共通スキル（Codex/Claude両対応）
-│   └── commands/                # 共通カスタムコマンド（Codex/Claude両対応）
+│   ├── commands/                # 共通カスタムコマンド（Codex/Claude両対応）
+│   └── notification/
+│       └── notify.sh            # クロスプラットフォーム通知スクリプト
+├── .claude/
+│   └── settings.json            # Claude Code セキュリティ設定
 ├── .codex/
-│   └── config.shared.toml       # Codex固有の共有設定
+│   └── config.shared.toml       # Codex 共有設定（セキュリティ設定含む）
+├── docs/
+│   └── codex/
+│       └── SECURITY_GUIDE.md    # Codex セキュリティ設定ガイド
 ├── prompts/                     # 人間向けドキュメント用
 └── scripts/
     ├── check-and-cleanup.sh     # クリーンアップ確認スクリプト
@@ -115,6 +122,7 @@ ls -la ~/.codex/config.shared.toml
 ls -la ~/.claude/CLAUDE.md
 ls -la ~/.claude/skills
 ls -la ~/.claude/commands
+ls -la ~/.claude/settings.json
 ls -la ~/.local/bin/sync-codex-config
 ```
 
@@ -180,7 +188,41 @@ ln -s /path/to/ai-agent-orchestration-settings/.agent/commands ~/.claude/command
 
 **注意:** Codex では `prompts` ディレクトリ、Claude Code では `commands` ディレクトリとして認識されますが、実体は同じ `.agent/commands` を参照します。
 
-### 7. Codex 固有の設定
+### 7. セキュリティ設定のリンク（重要）
+
+#### Claude Code のセキュリティ設定
+
+```bash
+# 例: ホームディレクトリにクローンした場合
+ln -s ~/ai-agent-orchestration-settings/.claude/settings.json ~/.claude/settings.json
+
+# 絶対パスで指定する場合
+ln -s /path/to/ai-agent-orchestration-settings/.claude/settings.json ~/.claude/settings.json
+```
+
+**設定内容**:
+- パーミッションバイパスモードの無効化
+- 機密ファイルへのアクセス拒否（`.env`, `.ssh`, `.aws`など）
+- 破壊的Git操作の拒否（`git reset --hard`, `git push --force`など）
+- 危険なファイル操作の拒否（`rm -rf`など）
+- ネットワーク経由の任意コード実行防止
+
+詳細は `.claude/settings.json` を参照してください。
+
+#### Codex のセキュリティ設定
+
+Codex は `.codex/config.shared.toml` にセキュリティ設定が含まれています。
+`sync-codex-config` コマンドで自動的に反映されます。
+
+**主な設定内容**:
+- 承認ポリシー: `untrusted`（すべての操作に承認が必要）
+- サンドボックスモード: `workspace-write`（プロジェクト領域のみ書き込み可）
+- ネットワークアクセス: デフォルトで無効
+- 機密環境変数の除外
+
+詳細なガイドは `docs/codex/SECURITY_GUIDE.md` を参照してください。
+
+### 8. Codex 固有の設定
 
 #### 共有設定ファイルのリンク
 
@@ -213,7 +255,7 @@ ln -s /path/to/ai-agent-orchestration-settings/scripts/sync-codex-config.sh ~/.l
 sync-codex-config
 ```
 
-### 8. 環境変数（必要なもののみ）
+### 9. 環境変数（必要なもののみ）
 
 例: GitHub MCP / Backlog MCP を使う場合
 
@@ -225,7 +267,7 @@ export BACKLOG_API_KEY="..."
 
 永続化する場合は `~/.bashrc` や `~/.zshrc` に追記してください。
 
-### 9. 検証
+### 10. 検証
 
 設定が正しく反映されているか確認します。
 

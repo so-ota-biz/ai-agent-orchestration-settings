@@ -20,6 +20,7 @@ PATHS_TO_CHECK=(
     "$HOME/.claude/CLAUDE.md"
     "$HOME/.claude/skills"
     "$HOME/.claude/commands"
+    "$HOME/.claude/settings.json"
     "$HOME/.local/bin/sync-codex-config"
 )
 

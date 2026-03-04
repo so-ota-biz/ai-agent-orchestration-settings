@@ -1,0 +1,173 @@
+{
+  "$schema": "https://code.claude.com/schemas/settings.json",
+  "//": "==========================================",
+  "// COMMENT": "Claude Code 安全設定",
+  "//": "==========================================",
+  "// PHILOSOPHY": "安全寄り・慎重運用を基本とし、攻撃コストを高める設計",
+  "// REFERENCE": "https://zenn.dev/ytksato/articles/057dc7c981d304",
+  "//": "==========================================",
+
+  "// CRITICAL SECURITY SETTINGS": "最重要セキュリティ設定（必ず確認）",
+
+  "permissions": {
+    "// disableBypassPermissionsMode": "パーミッションバイパスモードの無効化（最重要）",
+    "disableBypassPermissionsMode": "disable",
+
+    "// DENY RULES": "機密情報・危険な操作の拒否リスト",
+    "deny": [
+      "// 機密ファイルへのアクセス拒否",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.config/gcloud/**)",
+      "Write(./.env)",
+      "Write(./.env.*)",
+      "Write(./secrets/**)",
+      "Write(~/.ssh/**)",
+
+      "// Git の破壊的操作の拒否",
+      "Bash(git reset --hard *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git clean -fd *)",
+      "Bash(git rebase *)",
+
+      "// 危険なファイル操作の拒否",
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(sudo rm *)",
+
+      "// ネットワーク経由の任意コード実行を防ぐ",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(nc *)",
+      "Bash(netcat *)"
+    ],
+
+    "// ASK RULES": "重要な操作は確認を求める",
+    "ask": [
+      "// パッケージのインストール・削除",
+      "Bash(npm install *)",
+      "Bash(npm uninstall *)",
+      "Bash(yarn add *)",
+      "Bash(yarn remove *)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm remove *)",
+      "Bash(pip install *)",
+      "Bash(pip uninstall *)",
+
+      "// データベース操作",
+      "Bash(psql *)",
+      "Bash(mysql *)",
+      "Bash(mongosh *)",
+
+      "// Docker操作",
+      "Bash(docker rm *)",
+      "Bash(docker rmi *)",
+      "Bash(docker system prune *)",
+
+      "// Git の重要な操作",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git merge *)",
+      "Bash(git pull *)",
+
+      "// 設定ファイルの書き込み",
+      "Write(package.json)",
+      "Write(tsconfig.json)",
+      "Write(.gitignore)",
+      "Write(Dockerfile)",
+      "Write(docker-compose.yml)"
+    ],
+
+    "// ALLOW RULES": "安全な操作の許可リスト",
+    "allow": [
+      "// 読み取り専用の安全な操作",
+      "Read",
+      "Glob",
+      "Grep",
+
+      "// Git の読み取り専用操作",
+      "Bash(git status)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git show *)",
+      "Bash(git branch)",
+      "Bash(git remote -v)",
+
+      "// ビルド・テスト（破壊的でない操作）",
+      "Bash(npm run *)",
+      "Bash(yarn *)",
+      "Bash(pnpm *)",
+      "Bash(npm test)",
+      "Bash(npm run test)",
+
+      "// 一般的な安全なコマンド",
+      "Bash(ls *)",
+      "Bash(pwd)",
+      "Bash(echo *)",
+      "Bash(cat *)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(mkdir *)",
+      "Bash(touch *)",
+
+      "// 編集・書き込み（機密ファイル以外）",
+      "Edit",
+      "Write"
+    ]
+  },
+
+  "// MCP SERVER SETTINGS": "MCP サーバー設定",
+  "enableAllProjectMcpServers": false,
+  "// enableAllProjectMcpServers説明": "プロジェクトの.mcp.jsonを自動承認しない（セキュリティ重視）",
+
+  "// BASH SETTINGS": "Bash実行の制限",
+  "BASH_DEFAULT_TIMEOUT_MS": 120000,
+  "// BASH_DEFAULT_TIMEOUT_MS説明": "デフォルトタイムアウト: 2分",
+
+  "BASH_MAX_TIMEOUT_MS": 600000,
+  "// BASH_MAX_TIMEOUT_MS説明": "最大タイムアウト: 10分",
+
+  "BASH_MAX_OUTPUT_LENGTH": 30000,
+  "// BASH_MAX_OUTPUT_LENGTH説明": "出力の最大長",
+
+  "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": true,
+  "// CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR説明": "コマンド実行後、元のディレクトリに戻る",
+
+  "// SANDBOX SETTINGS": "サンドボックス設定（利用可能な場合）",
+  "sandbox": {
+    "enabled": false,
+    "// enabled説明": "Windowsでは未対応のためfalse。macOS/Linux/WSL2ではtrueを推奨",
+
+    "autoAllowBashIfSandboxed": false,
+    "// autoAllowBashIfSandboxed説明": "サンドボックス有効時でも自動承認しない（より慎重）",
+
+    "filesystem": {
+      "denyWrite": [
+        "~/.ssh",
+        "~/.aws",
+        "~/.config/gcloud"
+      ],
+      "denyRead": [
+        "~/.ssh/id_rsa",
+        "~/.ssh/id_ed25519",
+        "~/.aws/credentials"
+      ]
+    },
+
+    "network": {
+      "// allowedDomains説明": "許可するドメインのホワイトリスト（空=すべて拒否）",
+      "allowedDomains": []
+    }
+  },
+
+  "// OTHER SETTINGS": "その他の安全性向上設定",
+  "respectGitignore": true,
+  "// respectGitignore説明": "@ファイル選択時に.gitignoreを尊重",
+
+  "defaultMode": "ask",
+  "// defaultMode説明": "デフォルトの権限モード（ask=都度確認）"
+}
