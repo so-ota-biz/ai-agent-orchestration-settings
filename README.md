@@ -26,13 +26,41 @@ ai-agent-orchestration-settings/
 git clone git@github.com:so-ota-biz/ai-agent-orchestration-settings.git
 ```
 
-### 2. ディレクトリ準備
+### 2. スクリプトの実行権限確認（重要）
+
+クローン直後に、スクリプトファイルに実行権限が付与されているか確認します。
+
+```bash
+# 例: ホームディレクトリにクローンした場合
+cd ~/ai-agent-orchestration-settings
+
+# 絶対パスで指定する場合
+cd /path/to/ai-agent-orchestration-settings
+```
+
+権限を確認：
+
+```bash
+ls -la scripts/
+```
+
+`check-and-cleanup.sh` と `sync-codex-config.sh` が `-rwxr-xr-x` になっていれば OK です。
+
+実行権限がない場合（`-rw-r--r--` など）は、以下を実行してください：
+
+```bash
+chmod +x scripts/check-and-cleanup.sh scripts/sync-codex-config.sh
+```
+
+**注意**: 通常、Gitリポジトリには実行権限が含まれているため、このステップは不要です。ただし、環境によっては権限が保持されない場合があるため、念のため確認することを推奨します。
+
+### 3. ディレクトリ準備
 
 ```bash
 mkdir -p ~/.codex ~/.claude ~/.local/bin
 ```
 
-### 3. PATH 設定の確認
+### 4. PATH 設定の確認
 
 `~/.local/bin` にパスが通っていない場合は、`~/.bashrc` や `~/.zshrc` などに次を追加してください。
 
@@ -46,7 +74,7 @@ export PATH="$HOME/.local/bin:$PATH"
 source ~/.bashrc  # または source ~/.zshrc
 ```
 
-### 4. クリーンアップ確認（重要）
+### 5. クリーンアップ確認（重要）
 
 シンボリックリンクを作成する前に、既存の設定との衝突を確認・解消します。
 
@@ -110,7 +138,7 @@ mv ~/.codex/skills ~/.codex/skills.backup
 
 クリーンアップが完了したら、次のステップに進んでください。
 
-### 5. 共通リソースのリンク
+### 6. 共通リソースのリンク
 
 `.agent` 配下の共通リソースを Codex と Claude Code の両方にリンクします。
 
@@ -152,7 +180,7 @@ ln -s /path/to/ai-agent-orchestration-settings/.agent/commands ~/.claude/command
 
 **注意:** Codex では `prompts` ディレクトリ、Claude Code では `commands` ディレクトリとして認識されますが、実体は同じ `.agent/commands` を参照します。
 
-### 6. Codex 固有の設定
+### 7. Codex 固有の設定
 
 #### 共有設定ファイルのリンク
 
@@ -177,14 +205,7 @@ ln -s ~/ai-agent-orchestration-settings/scripts/sync-codex-config.sh ~/.local/bi
 ln -s /path/to/ai-agent-orchestration-settings/scripts/sync-codex-config.sh ~/.local/bin/sync-codex-config
 ```
 
-**注意:** リンク先のスクリプトに実行権限がない場合は、以下を実行してください。
-
-```bash
-# リポジトリ内のスクリプトに実行権限を付与
-chmod +x ~/ai-agent-orchestration-settings/scripts/sync-codex-config.sh
-# または
-chmod +x /path/to/ai-agent-orchestration-settings/scripts/sync-codex-config.sh
-```
+**注意**: セクション2で実行権限を確認済みであれば、このステップは不要です。
 
 #### 初回同期
 
@@ -192,7 +213,7 @@ chmod +x /path/to/ai-agent-orchestration-settings/scripts/sync-codex-config.sh
 sync-codex-config
 ```
 
-### 7. 環境変数（必要なもののみ）
+### 8. 環境変数（必要なもののみ）
 
 例: GitHub MCP / Backlog MCP を使う場合
 
@@ -204,7 +225,7 @@ export BACKLOG_API_KEY="..."
 
 永続化する場合は `~/.bashrc` や `~/.zshrc` に追記してください。
 
-### 8. 検証
+### 9. 検証
 
 設定が正しく反映されているか確認します。
 
