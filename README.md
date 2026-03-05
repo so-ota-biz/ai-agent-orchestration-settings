@@ -13,6 +13,7 @@ ai-agent-orchestration-settings/
 │   └── notification/
 │       └── notify.sh            # クロスプラットフォーム通知スクリプト
 ├── .claude/
+│   ├── mcp.json                 # Claude Code MCP サーバー設定
 │   └── settings.json            # Claude Code セキュリティ設定
 ├── .codex/
 │   └── config.shared.toml       # Codex 共有設定（セキュリティ設定含む）
@@ -28,6 +29,7 @@ ai-agent-orchestration-settings/
 ├── prompts/                     # 人間向けドキュメント用
 └── scripts/
     ├── check-and-cleanup.sh     # クリーンアップ確認スクリプト
+    ├── setup-mcp.sh             # Claude Code MCP設定同期スクリプト
     └── sync-codex-config.sh     # Codex設定同期スクリプト
 ```
 
@@ -57,12 +59,12 @@ cd /path/to/ai-agent-orchestration-settings
 ls -la scripts/
 ```
 
-`check-and-cleanup.sh` と `sync-codex-config.sh` が `-rwxr-xr-x` になっていれば OK です。
+`check-and-cleanup.sh`、`setup-mcp.sh`、`sync-codex-config.sh` が `-rwxr-xr-x` になっていれば OK です。
 
 実行権限がない場合（`-rw-r--r--` など）は、以下を実行してください：
 
 ```bash
-chmod +x scripts/check-and-cleanup.sh scripts/sync-codex-config.sh
+chmod +x scripts/check-and-cleanup.sh scripts/setup-mcp.sh scripts/sync-codex-config.sh
 ```
 
 **注意**: 通常、Gitリポジトリには実行権限が含まれているため、このステップは不要です。ただし、環境によっては権限が保持されない場合があるため、念のため確認することを推奨します。
@@ -134,6 +136,7 @@ ls -la ~/.gemini/skills
 ls -la ~/.gemini/commands
 ls -la ~/.gemini/settings.json
 ls -la ~/.agent/notification/notify.sh
+ls -la ~/.local/bin/setup-mcp
 ls -la ~/.local/bin/sync-codex-config
 ```
 
@@ -360,7 +363,42 @@ ln -s /path/to/ai-agent-orchestration-settings/scripts/sync-codex-config.sh ~/.l
 sync-codex-config
 ```
 
-### 9. 環境変数（必要なもののみ）
+### 9. Claude Code MCP サーバー設定
+
+Claude Code で利用する MCP サーバーは `.claude/mcp.json` で一元管理し、`setup-mcp` スクリプトで `~/.claude.json` に反映します。
+
+> **背景**: Claude Code の MCP サーバー設定は `settings.json` に記述しても読み込まれません。ユーザースコープの MCP 設定は `~/.claude.json` の `mcpServers` フィールドに保存される仕様のため、スクリプトで同期する方式を採用しています。
+
+#### スクリプトのリンク
+
+```bash
+# 例: ホームディレクトリにクローンした場合
+ln -s ~/ai-agent-orchestration-settings/scripts/setup-mcp.sh ~/.local/bin/setup-mcp
+
+# 絶対パスで指定する場合
+ln -s /path/to/ai-agent-orchestration-settings/scripts/setup-mcp.sh ~/.local/bin/setup-mcp
+```
+
+#### 初回同期
+
+```bash
+setup-mcp
+```
+
+以降、`.claude/mcp.json` を変更したら `setup-mcp` を実行して反映してください。
+
+**設定されるサーバー**:
+
+| サーバー名 | 用途 | 必要な環境変数 |
+|---|---|---|
+| `github-mcp-server` | GitHub 操作 | `GITHUB_MCP_API_TOKEN` |
+| `backlog` | Backlog 操作 | `BACKLOG_DOMAIN`, `BACKLOG_API_KEY` |
+| `drawio` | Draw.io 図作成 | - |
+| `docker` | Docker 操作 | - |
+| `chrome-devtools` | ブラウザ操作 | - |
+| `playwright` | ブラウザ自動操作 | - |
+
+### 10. 環境変数（必要なもののみ）
 
 #### Gemini CLI の必須環境変数
 
@@ -380,7 +418,7 @@ export BACKLOG_API_KEY="your-backlog-api-key"
 
 永続化する場合は `~/.bashrc` や `~/.zshrc` に追記してください。
 
-### 10. 検証
+### 11. 検証
 
 設定が正しく反映されているか確認します。
 
@@ -391,16 +429,21 @@ ls -la ~/.codex
 ls -la ~/.claude
 ls -la ~/.gemini
 ls -la ~/.agent/notification/notify.sh
+ls -la ~/.local/bin/setup-mcp
 ls -la ~/.local/bin/sync-codex-config
 ```
 
-#### 同期スクリプトの動作確認（Codex のみ）
+#### 同期スクリプトの動作確認
 
 ```bash
+# Codex 設定の同期
 sync-codex-config
+
+# Claude Code MCP 設定の同期
+setup-mcp
 ```
 
-エラーなく実行でき、`~/.codex/config.toml` が生成または更新されていれば成功です。
+エラーなく実行でき、`~/.codex/config.toml` の生成・更新と `setup-mcp` の完了メッセージが表示されれば成功です。
 
 #### CLI 動作確認
 
@@ -465,14 +508,24 @@ rm ~/.codex/skills
 ln -s ~/ai-agent-orchestration-settings/.agent/skills ~/.codex/skills
 ```
 
-### sync-codex-config が見つからない
+### setup-mcp / sync-codex-config が見つからない
 
 - `~/.local/bin` にPATHが通っているか確認してください
 - シンボリックリンクが正しく作成されているか確認してください
 
+### MCP サーバーが Claude Code に認識されない
+
+`setup-mcp` を実行した後、Claude Code を再起動してください。
+
+```bash
+setup-mcp
+# → Claude Code を再起動
+```
+
 ### スクリプトに実行権限がない
 
 ```bash
+chmod +x /path/to/ai-agent-orchestration-settings/scripts/setup-mcp.sh
 chmod +x /path/to/ai-agent-orchestration-settings/scripts/sync-codex-config.sh
 ```
 
