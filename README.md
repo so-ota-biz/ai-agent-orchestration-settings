@@ -70,7 +70,7 @@ chmod +x scripts/check-and-cleanup.sh scripts/sync-codex-config.sh
 ### 3. ディレクトリ準備
 
 ```bash
-mkdir -p ~/.codex ~/.claude ~/.gemini ~/.local/bin
+mkdir -p ~/.codex ~/.claude ~/.gemini ~/.agent/notification ~/.local/bin
 ```
 
 ### 4. PATH 設定の確認
@@ -133,6 +133,7 @@ ls -la ~/.gemini/GEMINI.md
 ls -la ~/.gemini/skills
 ls -la ~/.gemini/commands
 ls -la ~/.gemini/settings.json
+ls -la ~/.agent/notification/notify.sh
 ls -la ~/.local/bin/sync-codex-config
 ```
 
@@ -204,6 +205,18 @@ ln -s /path/to/ai-agent-orchestration-settings/.agent/commands ~/.gemini/command
 
 **注意:** Codex では `prompts` ディレクトリ、Claude Code と Gemini CLI では `commands` ディレクトリとして認識されますが、実体は同じ `.agent/commands` を参照します。
 
+#### 共通通知スクリプトのリンク
+
+`AGENTS.md` で完了通知コマンドとして `sh ~/.agent/notification/notify.sh` を実行するため、以下のリンクを作成します。
+
+```bash
+# 例: ホームディレクトリにクローンした場合
+ln -s ~/ai-agent-orchestration-settings/.agent/notification/notify.sh ~/.agent/notification/notify.sh
+
+# 絶対パスで指定する場合
+ln -s /path/to/ai-agent-orchestration-settings/.agent/notification/notify.sh ~/.agent/notification/notify.sh
+```
+
 ### 7. セキュリティ設定のリンク（重要）
 
 #### Claude Code のセキュリティ設定
@@ -240,11 +253,13 @@ mklink "%USERPROFILE%\.claude\settings.json" "C:\path\to\ai-agent-orchestration-
 ```
 
 **注意**:
+
 - PowerShell の場合、通常は管理者権限は不要ですが、環境によっては必要な場合があります
 - コマンドプロンプトの `mklink` は管理者権限が必要です
 - Windows でシンボリックリンクが作成できない場合は、ファイルを直接コピーする方法もあります（ただし、リポジトリの変更が自動反映されません）
 
 **設定内容**:
+
 - パーミッションバイパスモードの無効化
 - 機密ファイルへのアクセス拒否（`.env`, `.ssh`, `.aws`など）
 - 破壊的Git操作の拒否（`git reset --hard`, `git push --force`など）
@@ -259,6 +274,7 @@ Codex は `.codex/config.shared.toml` にセキュリティ設定が含まれて
 `sync-codex-config` コマンドで自動的に反映されます。
 
 **主な設定内容**:
+
 - 承認ポリシー: `untrusted`（すべての操作に承認が必要）
 - サンドボックスモード: `workspace-write`（プロジェクト領域のみ書き込み可）
 - ネットワークアクセス: デフォルトで無効
@@ -300,6 +316,7 @@ mklink "%USERPROFILE%\.gemini\settings.json" "C:\path\to\ai-agent-orchestration-
 ```
 
 **設定内容**:
+
 - YOLO モード（全自動承認）の無効化
 - 永続的なツール承認の無効化
 - 機密環境変数の自動マスキング
@@ -373,6 +390,7 @@ export BACKLOG_API_KEY="your-backlog-api-key"
 ls -la ~/.codex
 ls -la ~/.claude
 ls -la ~/.gemini
+ls -la ~/.agent/notification/notify.sh
 ls -la ~/.local/bin/sync-codex-config
 ```
 

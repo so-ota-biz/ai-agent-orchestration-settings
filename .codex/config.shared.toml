@@ -45,11 +45,11 @@ exclude = [
   "AWS_*",
   "GITHUB_TOKEN",
   "GITHUB_MCP_API_TOKEN",
+  "GEMINI_API_KEY",
   "OPENAI_API_KEY",
   "*_SECRET",
   "*_PASSWORD",
-  "*_API_KEY",
-  "*_PRIVATE_KEY"
+  "*_PRIVATE_KEY",
 ]
 
 # Github MCP setting
@@ -57,19 +57,35 @@ exclude = [
 # experimental_use_rmcp_client = true  # 旧形式（廃止予定）
 
 [features]
-rmcp_client = true  # 推奨: Rust-based MCP クライアントを使用
+rmcp_client = true # 推奨: Rust-based MCP クライアントを使用
 
 [mcp_servers.github-mcp-server]
 url = "https://api.githubcopilot.com/mcp"
 bearer_token_env_var = "GITHUB_MCP_API_TOKEN"
 
 # Backlog MCP setting
-# [mcp_servers.backlog]
-# command = "docker"
-# args = ["run", "--pull", "always", "-i", "--rm", "-e", "BACKLOG_DOMAIN", "-e", "BACKLOG_API_KEY", "ghcr.io/nulab/backlog-mcp-server:latest"]
-# Set credentials in your shell environment before starting Codex.
-# export BACKLOG_DOMAIN="your-space.backlog.com"
-# export BACKLOG_API_KEY="your-api-key"
+[mcp_servers.backlog]
+command = "docker"
+args = [
+  "run",
+  "--pull",
+  "always",
+  "-i",
+  "--rm",
+  "-e",
+  "BACKLOG_DOMAIN",
+  "-e",
+  "BACKLOG_API_KEY",
+  "ghcr.io/nulab/backlog-mcp-server:latest",
+]
+startup_timeout_sec = 30
+# NOTE:
+# `shell_environment_policy.inherit = "core"` 環境では、シェル由来の BACKLOG_* が
+# 起動プロセスに渡らずハンドシェイク失敗する場合がある。
+# 確実運用する場合は、ローカル `~/.codex/config.toml` に以下を明示する:
+# [mcp_servers.backlog.env]
+# BACKLOG_DOMAIN = "your-space.backlog.com"
+# BACKLOG_API_KEY = "your-backlog-api-key"
 
 # drawio MCP setting
 [mcp_servers.drawio]
