@@ -70,7 +70,7 @@ chmod +x scripts/check-and-cleanup.sh scripts/sync-codex-config.sh
 ### 3. ディレクトリ準備
 
 ```bash
-mkdir -p ~/.codex ~/.claude ~/.gemini ~/.local/bin
+mkdir -p ~/.codex ~/.claude ~/.gemini ~/.agent/notification ~/.local/bin
 ```
 
 ### 4. PATH 設定の確認
@@ -133,6 +133,7 @@ ls -la ~/.gemini/GEMINI.md
 ls -la ~/.gemini/skills
 ls -la ~/.gemini/commands
 ls -la ~/.gemini/settings.json
+ls -la ~/.agent/notification/notify.sh
 ls -la ~/.local/bin/sync-codex-config
 ```
 
@@ -203,6 +204,18 @@ ln -s /path/to/ai-agent-orchestration-settings/.agent/commands ~/.gemini/command
 ```
 
 **注意:** Codex では `prompts` ディレクトリ、Claude Code と Gemini CLI では `commands` ディレクトリとして認識されますが、実体は同じ `.agent/commands` を参照します。
+
+#### 共通通知スクリプトのリンク
+
+`AGENTS.md` で完了通知コマンドとして `sh ~/.agent/notification/notify.sh` を実行するため、以下のリンクを作成します。
+
+```bash
+# 例: ホームディレクトリにクローンした場合
+ln -s ~/ai-agent-orchestration-settings/.agent/notification/notify.sh ~/.agent/notification/notify.sh
+
+# 絶対パスで指定する場合
+ln -s /path/to/ai-agent-orchestration-settings/.agent/notification/notify.sh ~/.agent/notification/notify.sh
+```
 
 ### 7. セキュリティ設定のリンク（重要）
 
@@ -377,6 +390,7 @@ export BACKLOG_API_KEY="your-backlog-api-key"
 ls -la ~/.codex
 ls -la ~/.claude
 ls -la ~/.gemini
+ls -la ~/.agent/notification/notify.sh
 ls -la ~/.local/bin/sync-codex-config
 ```
 
