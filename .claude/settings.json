@@ -105,6 +105,7 @@
   "sandbox": {
     "enabled": false,
     "autoAllowBashIfSandboxed": false,
+    "allowedDomains": [],
     "filesystem": {
       "denyWrite": [
         "~/.ssh",
@@ -116,9 +117,6 @@
         "~/.ssh/id_ed25519",
         "~/.aws/credentials"
       ]
-    },
-    "network": {
-      "allowedDomains": []
     }
   },
 
