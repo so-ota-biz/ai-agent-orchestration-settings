@@ -89,7 +89,9 @@
       "Bash(grep *)",
       "Bash(find *)",
       "Bash(mkdir *)",
-      "Bash(touch *)"
+      "Bash(touch *)",
+
+      "Bash(sh ~/.agent/notification/notify.sh)"
     ]
   },
 
