@@ -106,9 +106,15 @@
     "backlog": {
       "command": "docker",
       "args": [
-        "run", "--pull", "always", "-i", "--rm",
-        "-e", "BACKLOG_DOMAIN",
-        "-e", "BACKLOG_API_KEY",
+        "run",
+        "--pull",
+        "always",
+        "-i",
+        "--rm",
+        "-e",
+        "BACKLOG_DOMAIN",
+        "-e",
+        "BACKLOG_API_KEY",
         "ghcr.io/nulab/backlog-mcp-server:latest"
       ],
       "timeout": 30000
@@ -143,16 +149,8 @@
     "autoAllowBashIfSandboxed": false,
     "allowedDomains": [],
     "filesystem": {
-      "denyWrite": [
-        "~/.ssh",
-        "~/.aws",
-        "~/.config/gcloud"
-      ],
-      "denyRead": [
-        "~/.ssh/id_rsa",
-        "~/.ssh/id_ed25519",
-        "~/.aws/credentials"
-      ]
+      "denyWrite": ["~/.ssh", "~/.aws", "~/.config/gcloud"],
+      "denyRead": ["~/.ssh/id_rsa", "~/.ssh/id_ed25519", "~/.aws/credentials"]
     }
   },
 

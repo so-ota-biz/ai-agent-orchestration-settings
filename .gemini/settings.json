@@ -65,9 +65,9 @@
   },
   "mcpServers": {
     "github-mcp-server": {
-      "url": "https://api.githubcopilot.com/mcp",
-      "env": {
-        "GITHUB_MCP_API_TOKEN": "$GITHUB_MCP_API_TOKEN"
+      "httpUrl": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_MCP_API_TOKEN}"
       },
       "trust": false,
       "timeout": 30000
@@ -75,9 +75,15 @@
     "backlog": {
       "command": "docker",
       "args": [
-        "run", "--pull", "always", "-i", "--rm",
-        "-e", "BACKLOG_DOMAIN",
-        "-e", "BACKLOG_API_KEY",
+        "run",
+        "--pull",
+        "always",
+        "-i",
+        "--rm",
+        "-e",
+        "BACKLOG_DOMAIN",
+        "-e",
+        "BACKLOG_API_KEY",
         "ghcr.io/nulab/backlog-mcp-server:latest"
       ],
       "timeout": 30000
