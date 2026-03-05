@@ -95,6 +95,42 @@
 
   "enableAllProjectMcpServers": false,
 
+  "mcpServers": {
+    "github-mcp-server": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_MCP_API_TOKEN}"
+      }
+    },
+    "backlog": {
+      "command": "docker",
+      "args": [
+        "run", "--pull", "always", "-i", "--rm",
+        "-e", "BACKLOG_DOMAIN",
+        "-e", "BACKLOG_API_KEY",
+        "ghcr.io/nulab/backlog-mcp-server:latest"
+      ],
+      "timeout": 30000
+    },
+    "drawio": {
+      "command": "npx",
+      "args": ["-y", "@drawio/mcp@latest"]
+    },
+    "docker": {
+      "command": "docker",
+      "args": ["mcp", "gateway", "run"]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    }
+  },
+
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "120000",
     "BASH_MAX_TIMEOUT_MS": "600000",

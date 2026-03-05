@@ -1,10 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/google-gemini/gemini-cli/main/schemas/settings.schema.json",
-
   "general": {
     "defaultApprovalMode": "default"
   },
-
   "security": {
     "disableYoloMode": true,
     "enablePermanentToolApproval": false,
@@ -20,9 +18,11 @@
         ".*PRIVATE.*",
         ".*CERT.*"
       ]
+    },
+    "auth": {
+      "selectedType": "oauth-personal"
     }
   },
-
   "tools": {
     "sandbox": true,
     "allowed": [
@@ -63,7 +63,6 @@
     },
     "truncateToolOutputThreshold": 30000
   },
-
   "mcpServers": {
     "github-mcp-server": {
       "url": "https://api.githubcopilot.com/mcp",
@@ -72,16 +71,40 @@
       },
       "trust": false,
       "timeout": 30000
+    },
+    "backlog": {
+      "command": "docker",
+      "args": [
+        "run", "--pull", "always", "-i", "--rm",
+        "-e", "BACKLOG_DOMAIN",
+        "-e", "BACKLOG_API_KEY",
+        "ghcr.io/nulab/backlog-mcp-server:latest"
+      ],
+      "timeout": 30000
+    },
+    "drawio": {
+      "command": "npx",
+      "args": ["-y", "@drawio/mcp@latest"]
+    },
+    "docker": {
+      "command": "docker",
+      "args": ["mcp", "gateway", "run"]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
     }
   },
-
   "context": {
     "fileName": "GEMINI.md",
     "fileFiltering": {
       "respectGitIgnore": true
     }
   },
-
   "model": {
     "maxSessionTurns": 50,
     "summarizeToolOutput": {
@@ -90,7 +113,6 @@
       }
     }
   },
-
   "admin": {
     "secureModeEnabled": true,
     "extensions": {
@@ -100,11 +122,9 @@
       "enabled": true
     }
   },
-
   "privacy": {
     "usageStatisticsEnabled": false
   },
-
   "ui": {
     "hideContextSummary": false,
     "hideBanner": false
