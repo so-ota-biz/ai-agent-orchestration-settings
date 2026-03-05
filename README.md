@@ -240,11 +240,13 @@ mklink "%USERPROFILE%\.claude\settings.json" "C:\path\to\ai-agent-orchestration-
 ```
 
 **注意**:
+
 - PowerShell の場合、通常は管理者権限は不要ですが、環境によっては必要な場合があります
 - コマンドプロンプトの `mklink` は管理者権限が必要です
 - Windows でシンボリックリンクが作成できない場合は、ファイルを直接コピーする方法もあります（ただし、リポジトリの変更が自動反映されません）
 
 **設定内容**:
+
 - パーミッションバイパスモードの無効化
 - 機密ファイルへのアクセス拒否（`.env`, `.ssh`, `.aws`など）
 - 破壊的Git操作の拒否（`git reset --hard`, `git push --force`など）
@@ -259,6 +261,7 @@ Codex は `.codex/config.shared.toml` にセキュリティ設定が含まれて
 `sync-codex-config` コマンドで自動的に反映されます。
 
 **主な設定内容**:
+
 - 承認ポリシー: `untrusted`（すべての操作に承認が必要）
 - サンドボックスモード: `workspace-write`（プロジェクト領域のみ書き込み可）
 - ネットワークアクセス: デフォルトで無効
@@ -300,6 +303,7 @@ mklink "%USERPROFILE%\.gemini\settings.json" "C:\path\to\ai-agent-orchestration-
 ```
 
 **設定内容**:
+
 - YOLO モード（全自動承認）の無効化
 - 永続的なツール承認の無効化
 - 機密環境変数の自動マスキング

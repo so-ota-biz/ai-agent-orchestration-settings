@@ -69,13 +69,26 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# 既存のターゲット設定ファイルから [projects."..."] セクションを抽出
-# Codex が自動生成したプロジェクト設定を保持するため
+# 既存のターゲット設定ファイルから [projects."..."] セクションのみを抽出
+# 以前は最初の [projects."..."] 以降を末尾まで保持していたため、
+# 非 projects セクションが後段にあると重複キーが発生する可能性があった。
 if [[ -f "${TARGET_CONFIG}" ]]; then
   awk '
-    BEGIN { copy = 0 }
-    /^\[projects\."/ { copy = 1 }
-    copy { print }
+    BEGIN { in_projects = 0 }
+
+    /^[[:space:]]*\[projects\."/ {
+      in_projects = 1
+      print
+      next
+    }
+
+    /^[[:space:]]*\[/ {
+      in_projects = 0
+    }
+
+    in_projects {
+      print
+    }
   ' "${TARGET_CONFIG}" > "${tmp_projects}"
 fi
 
