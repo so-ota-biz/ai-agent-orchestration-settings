@@ -57,11 +57,19 @@ with open(mcp_config_path, "r", encoding="utf-8") as f:
     mcp_config = json.load(f)
 
 mcp_servers = mcp_config.get("mcpServers", {})
+if not isinstance(mcp_servers, dict):
+    raise SystemExit("[setup-mcp] エラー: mcp.json の mcpServers はオブジェクトである必要があります")
 
 with open(target_path, "r", encoding="utf-8") as f:
     target = json.load(f)
 
+if not isinstance(target, dict):
+    raise SystemExit("[setup-mcp] エラー: ターゲットJSONのルートはオブジェクトである必要があります")
+
 before = target.get("mcpServers", {})
+if not isinstance(before, dict):
+    raise SystemExit("[setup-mcp] エラー: ターゲットJSONの mcpServers はオブジェクトである必要があります")
+
 target["mcpServers"] = mcp_servers
 
 tmp_fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(target_path), suffix=".tmp")
@@ -76,7 +84,10 @@ except Exception:
 
 added = set(mcp_servers) - set(before)
 removed = set(before) - set(mcp_servers)
-updated = set(mcp_servers) & set(before)
+updated = {
+    key for key in (set(mcp_servers) & set(before))
+    if mcp_servers[key] != before[key]
+}
 
 print(f"[setup-mcp] mcpServers を更新しました ({len(mcp_servers)} 件)")
 if added:
