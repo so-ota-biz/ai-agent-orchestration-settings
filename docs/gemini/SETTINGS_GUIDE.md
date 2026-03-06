@@ -19,11 +19,13 @@ Claude Code、Codex CLI と同様のセキュリティポリシーを Gemini CLI
 ### 一般設定（general）
 
 #### `defaultApprovalMode`
+
 ```json
 "defaultApprovalMode": "default"
 ```
 
 **承認モード:**
+
 - `default`: 通常モード（各ツールで確認） - **推奨**
 - `auto_edit`: 編集操作は自動承認
 - `plan`: プランモード（実行前に計画を確認、読み取り専用）
@@ -35,6 +37,7 @@ Claude Code、Codex CLI と同様のセキュリティポリシーを Gemini CLI
 ### セキュリティ設定（security）
 
 #### `disableYoloMode`
+
 ```json
 "disableYoloMode": true
 ```
@@ -46,6 +49,7 @@ YOLO モード（全ツール自動承認）を無効化します。すべての
 ---
 
 #### `enablePermanentToolApproval`
+
 ```json
 "enablePermanentToolApproval": false
 ```
@@ -55,6 +59,7 @@ YOLO モード（全ツール自動承認）を無効化します。すべての
 ---
 
 #### `environmentVariableRedaction`
+
 ```json
 "environmentVariableRedaction": {
   "enabled": true,
@@ -72,6 +77,7 @@ YOLO モード（全ツール自動承認）を無効化します。すべての
 ```
 
 **機密環境変数の自動マスキング:**
+
 - ツール実行時に機密情報を含む環境変数を自動的にマスク
 - パターンマッチングで柔軟に対応
 
@@ -80,6 +86,7 @@ YOLO モード（全ツール自動承認）を無効化します。すべての
 ### ツール設定（tools）
 
 #### `sandbox`
+
 ```json
 "sandbox": true
 ```
@@ -91,6 +98,7 @@ YOLO モード（全ツール自動承認）を無効化します。すべての
 ---
 
 #### `allowed`（許可リスト）
+
 ```json
 "allowed": [
   "Read",
@@ -103,6 +111,7 @@ YOLO モード（全ツール自動承認）を無効化します。すべての
 ```
 
 **確認なしで実行可能なツール:**
+
 - 読み取り専用操作（Read, Glob, Grep）
 - Git の読み取り専用コマンド
 - 安全なシェルコマンド（ls, pwd, echo, cat など）
@@ -110,6 +119,7 @@ YOLO モード（全ツール自動承認）を無効化します。すべての
 ---
 
 #### `exclude`（禁止リスト）
+
 ```json
 "exclude": [
   "BashCommand(rm -rf *)",
@@ -123,6 +133,7 @@ YOLO モード（全ツール自動承認）を無効化します。すべての
 ```
 
 **完全に禁止するツール:**
+
 - 破壊的なファイル操作（rm -rf）
 - Git の破壊的操作（reset --hard, push --force）
 - ネットワーク経由の任意コード実行（curl, wget）
@@ -130,6 +141,7 @@ YOLO モード（全ツール自動承認）を無効化します。すべての
 ---
 
 #### `shell`
+
 ```json
 "shell": {
   "enableInteractiveShell": false,
@@ -138,12 +150,14 @@ YOLO モード（全ツール自動承認）を無効化します。すべての
 ```
 
 **シェル実行設定:**
+
 - インタラクティブシェルを無効化（セキュリティ強化）
 - 非アクティブタイムアウト: 2分（120秒）
 
 ---
 
 #### `truncateToolOutputThreshold`
+
 ```json
 "truncateToolOutputThreshold": 30000
 ```
@@ -157,9 +171,9 @@ YOLO モード（全ツール自動承認）を無効化します。すべての
 ```json
 "mcpServers": {
   "github-mcp-server": {
-    "url": "https://api.githubcopilot.com/mcp",
-    "env": {
-      "GITHUB_MCP_API_TOKEN": "$GITHUB_MCP_API_TOKEN"
+    "httpUrl": "https://api.githubcopilot.com/mcp/",
+    "headers": {
+      "Authorization": "Bearer ${GITHUB_MCP_API_TOKEN}"
     },
     "trust": false,
     "timeout": 30000
@@ -168,12 +182,14 @@ YOLO モード（全ツール自動承認）を無効化します。すべての
 ```
 
 **GitHub MCP Server 設定:**
-- `url`: GitHub Copilot の MCP エンドポイント
-- `env`: 環境変数から API トークンを取得（`$VAR_NAME` 構文）
+
+- `httpUrl`: GitHub Copilot の MCP エンドポイント
+- `headers`: `Authorization` ヘッダーに PAT を設定（`${VAR_NAME}` 構文）
 - `trust`: false（確認ダイアログを表示）
 - `timeout`: 30秒（30000ミリ秒）
 
 **その他の MCP Server（オプション）:**
+
 - Docker MCP: `docker mcp gateway run`
 - Draw.io MCP: `npx -y @drawio/mcp@latest`
 - Playwright MCP: `npx -y @playwright/mcp@latest`
@@ -194,9 +210,11 @@ Codex の `.codex/config.shared.toml` を参考に追加可能です。
 ```
 
 #### `fileName`
+
 コンテキストファイル名: `GEMINI.md`（デフォルト）
 
 **シンボリックリンク設定:**
+
 ```bash
 # リポジトリローカルのパスを使用
 ln -s ~/ai-agent-orchestration-settings/.agent/AGENTS.md ~/.gemini/GEMINI.md
@@ -206,6 +224,7 @@ ln -s /path/to/ai-agent-orchestration-settings/.agent/AGENTS.md ~/.gemini/GEMINI
 ```
 
 #### `fileFiltering.respectGitIgnore`
+
 `.gitignore` パターンを尊重: `true`
 
 ---
@@ -224,10 +243,13 @@ ln -s /path/to/ai-agent-orchestration-settings/.agent/AGENTS.md ~/.gemini/GEMINI
 ```
 
 #### `maxSessionTurns`
+
 チャット履歴の保持ターン数: 50
 
 #### `summarizeToolOutput`
+
 ツール出力の要約トークン制限:
+
 - `run_shell_command`: シェルコマンド出力の最大保持トークン数（10000トークン）
 - コンテキストウィンドウ管理のため、冗長なコマンド出力を制限
 
@@ -248,12 +270,15 @@ ln -s /path/to/ai-agent-orchestration-settings/.agent/AGENTS.md ~/.gemini/GEMINI
 ```
 
 #### `secureModeEnabled`
+
 セキュアモード: `true`（YOLO モードを完全に禁止）
 
 #### `extensions.enabled`
+
 拡張機能のインストール: `false`（無効化）
 
 #### `mcp.enabled`
+
 MCP サーバーの使用: `true`（有効化）
 
 ---
@@ -293,10 +318,7 @@ MCP サーバーの使用: `true`（有効化）
 ```json
 {
   "tools": {
-    "allowed": [
-      "BashCommand(npm install)",
-      "BashCommand(npm ci)"
-    ]
+    "allowed": ["BashCommand(npm install)", "BashCommand(npm ci)"]
   }
 }
 ```
@@ -324,15 +346,15 @@ MCP サーバーの使用: `true`（有効化）
 
 ## Claude Code / Codex CLI との違い
 
-| 項目 | Claude Code | Codex CLI | Gemini CLI |
-|------|------------|-----------|-----------|
-| **設定形式** | JSON | TOML | JSON |
-| **パーミッション** | deny/ask/allow | approval_policy | allowed/exclude |
-| **サンドボックス** | sandbox.enabled | sandbox_mode | tools.sandbox |
-| **YOLO防止** | disableBypassPermissionsMode | approval_policy="untrusted" | security.disableYoloMode |
-| **環境変数保護** | sandbox.filesystem.denyRead | shell_environment_policy.exclude | security.environmentVariableRedaction |
-| **MCP設定** | mcpServers（簡易） | [mcp_servers.name] | mcpServers（詳細） |
-| **コンテキストファイル** | CLAUDE.md | AGENTS.md | GEMINI.md |
+| 項目                     | Claude Code                  | Codex CLI                        | Gemini CLI                            |
+| ------------------------ | ---------------------------- | -------------------------------- | ------------------------------------- |
+| **設定形式**             | JSON                         | TOML                             | JSON                                  |
+| **パーミッション**       | deny/ask/allow               | approval_policy                  | allowed/exclude                       |
+| **サンドボックス**       | sandbox.enabled              | sandbox_mode                     | tools.sandbox                         |
+| **YOLO防止**             | disableBypassPermissionsMode | approval_policy="untrusted"      | security.disableYoloMode              |
+| **環境変数保護**         | sandbox.filesystem.denyRead  | shell_environment_policy.exclude | security.environmentVariableRedaction |
+| **MCP設定**              | mcpServers（簡易）           | [mcp_servers.name]               | mcpServers（詳細）                    |
+| **コンテキストファイル** | CLAUDE.md                    | AGENTS.md                        | GEMINI.md                             |
 
 ---
 
@@ -353,7 +375,7 @@ MCP サーバーの使用: `true`（有効化）
 
 1. 環境変数が正しく設定されているか確認
    ```bash
-   echo $GITHUB_MCP_API_TOKEN
+   echo $GITHUB_PAT
    ```
 2. `trust: false` の場合、確認ダイアログで承認が必要
 3. タイムアウト設定（`timeout`）を調整
@@ -369,7 +391,7 @@ MCP サーバーの使用: `true`（有効化）
 export GEMINI_API_KEY="your-api-key"
 
 # GitHub MCP トークン（オプション）
-export GITHUB_MCP_API_TOKEN="your-github-token"
+export GITHUB_PAT="your-github-token"
 ```
 
 ### シェル設定ファイルに追加
@@ -377,7 +399,7 @@ export GITHUB_MCP_API_TOKEN="your-github-token"
 ```bash
 # ~/.bashrc または ~/.zshrc に追加
 export GEMINI_API_KEY="your-api-key"
-export GITHUB_MCP_API_TOKEN="your-github-token"
+export GITHUB_PAT="your-github-token"
 ```
 
 ---

@@ -1,11 +1,17 @@
 ---
 name: aws_diagram_generator
-description: Draw.ioを使用してAWSインフラ図を設計・生成するスキル
+description: 【非推奨】このスキルは drawio_diagram に統合されました。新規のAWS構成図作成には drawio_diagram を使用してください。このスキルは使用しないでください。
 ---
 
-# Skill: Draw.io AWS Architecture Generator
+# Skill: Draw.io AWS Architecture Generator（非推奨）
 
-## 1. Overview
+> **このスキルは非推奨です。**
+> AWS・GCP・汎用アーキテクチャ図の作成には、代わりに **`drawio_diagram`** スキルを使用してください。
+> `drawio_diagram` はこのスキルのすべての機能を包含し、さらに改善されています。
+
+---
+
+## 1. Overview（旧）
 
 このスキルは、ユーザーの要求に応じてAWSのベストプラクティスに基づいたインフラ構成図を設計し、Draw.io（diagrams.net）で編集可能な形式で生成・操作するためのものです。
 

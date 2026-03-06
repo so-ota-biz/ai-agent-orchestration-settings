@@ -54,9 +54,12 @@ case "${OS_TYPE}" in
     # ========================================
     # macOS環境
     # ========================================
-    if command -v terminal-notifier >/dev/null 2>&1; then
+    if [ -n "${CODEX_SANDBOX:-}" ]; then
+      # Codex sandbox では terminal-notifier が SIGABRT で終了するため直接フォールバック
+      /usr/bin/osascript -e "display notification \"$MSG\" with title \"$TITLE\" sound name \"$SOUND\"" >/dev/null 2>&1 || true
+    elif command -v terminal-notifier >/dev/null 2>&1; then
       # terminal-notifier が利用可能な場合（推奨）
-      terminal-notifier -title "$TITLE" -message "$MSG" -sound "$SOUND" || \
+      (terminal-notifier -title "$TITLE" -message "$MSG" -sound "$SOUND") >/dev/null 2>&1 || \
       /usr/bin/osascript -e "display notification \"$MSG\" with title \"$TITLE\" sound name \"$SOUND\"" >/dev/null 2>&1 || true
     else
       # osascript を使用（macOS標準搭載）
