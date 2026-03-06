@@ -1,4 +1,4 @@
-# Skill: slide_deck_ppt_google_safe
+# Skill: slide_deck_pptx_google_safe
 
 Version: 1.0
 Owner: (your name/team)
