@@ -394,7 +394,7 @@ setup-mcp
 | `github-mcp-server` | GitHub 操作 | `GITHUB_MCP_API_TOKEN` |
 | `backlog` | Backlog 操作 | `BACKLOG_DOMAIN`, `BACKLOG_API_KEY` |
 | `drawio` | Draw.io 図作成 | - |
-| `docker` | Docker 操作 | - |
+| `docker` | Docker 操作 | WSL 環境では `DOCKER_MCP_IN_CONTAINER=1` が必要（後述） |
 | `chrome-devtools` | ブラウザ操作 | - |
 | `playwright` | ブラウザ自動操作 | - |
 
@@ -534,3 +534,21 @@ chmod +x /path/to/ai-agent-orchestration-settings/scripts/sync-codex-config.sh
 - Codex: `~/.codex/prompts` が `.agent/commands` にリンクされているか確認
 - Claude Code: `~/.claude/commands` が `.agent/commands` にリンクされているか確認
 - ツールを再起動して設定を再読み込みしてください
+
+### WSL 環境で Docker MCP が connected にならない
+
+WSL（Windows Subsystem for Linux）から `docker mcp gateway run` を実行すると、Docker Desktop が稼働中でも `Docker Desktop is not running` エラーが発生する場合があります。
+
+`.claude/mcp.json` の `docker` エントリに `DOCKER_MCP_IN_CONTAINER=1` 環境変数を追加してください。本リポジトリの設定にはすでに含まれていますが、手動で設定している場合は以下を参考にしてください：
+
+```json
+"docker": {
+  "command": "docker",
+  "args": ["mcp", "gateway", "run"],
+  "env": {
+    "DOCKER_MCP_IN_CONTAINER": "1"
+  }
+}
+```
+
+設定後、`setup-mcp` を実行して Claude Code を再起動してください。

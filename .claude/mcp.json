@@ -29,7 +29,10 @@
     },
     "docker": {
       "command": "docker",
-      "args": ["mcp", "gateway", "run"]
+      "args": ["mcp", "gateway", "run"],
+      "env": {
+        "DOCKER_MCP_IN_CONTAINER": "1"
+      }
     },
     "chrome-devtools": {
       "command": "npx",
