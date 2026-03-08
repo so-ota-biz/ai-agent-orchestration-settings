@@ -1,5 +1,5 @@
 ---
-name: aws_diagram_generator
+name: aws-diagram-generator
 description: 【非推奨】このスキルは drawio_diagram に統合されました。新規のAWS構成図作成には drawio_diagram を使用してください。このスキルは使用しないでください。
 ---
 
