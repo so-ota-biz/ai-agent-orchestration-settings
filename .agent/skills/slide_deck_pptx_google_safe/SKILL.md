@@ -1,3 +1,8 @@
+---
+name: slide-deck-pptx-google-safe
+description: PowerPoint（.pptx）を主成果物として作り、必要に応じてGoogleスライドへ変換・共同編集できる品質を担保するスキル。
+---
+
 # Skill: slide_deck_pptx_google_safe
 
 Version: 1.0
