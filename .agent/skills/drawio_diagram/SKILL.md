@@ -1,5 +1,5 @@
 ---
-name: drawio_diagram
+name: drawio-diagram
 description: Draw.ioを使用してAWS・GCPなどのクラウド構成図や汎用アーキテクチャ図を設計・生成するスキル。「構成図を描いて」「draw.ioで図を作って」「AWSアーキテクチャを図示して」「GCP構成図」などの依頼で使用する。
 ---
 
