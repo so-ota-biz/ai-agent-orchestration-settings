@@ -17,7 +17,7 @@
 - 作業ブランチ作成直後は `git branch -vv` と `git config --get branch.$(git branch --show-current).merge` で upstream を確認し、`origin/main` / `origin/develop` を追跡していた場合は `STOP` する。
 - 作業ブランチの初回 push は `git push -u origin <new-branch>` を使用し、自分自身のリモートブランチを upstream に設定する。
 - 上記の確認が完了するまでは、ファイル編集・コミット・push を含む実装作業を開始してはならない。確認未了なら `STOP` してユーザーへ報告する。
-- 現在ブランチ名が `main` / `master` / `develop` / `development` / `staging` / `production` / `release` / `hotfix`、またはそれらを含む保護対象ブランチである場合、そのブランチ上で実装作業を行ってはならない。
+- 現在ブランチ名が `main` / `master` / `develop` / `development` / `staging` / `production` に完全一致する場合、または `release/` / `hotfix/` で始まる場合、そのブランチ上で実装作業を行ってはならない。
 - 実装開始前には現在ブランチ名を必ず確認し、GitFlow / GitHub Flow 上で特別な意味を持つブランチに該当した場合は、新しい安全な作業ブランチへ切り替える許可を得るまで `STOP` する。
 
 ## 作業モードの識別（最初に確認）
