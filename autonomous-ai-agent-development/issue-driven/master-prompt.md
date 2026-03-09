@@ -11,13 +11,18 @@
 3. 本プロンプトの指示
    これらのルールに矛盾がある場合は、プロジェクト固有の設定を最優先せよ。
 
-## 1. 実行対象（Issue/チケットの特定）
+## 1. 実行対象（Issue/チケットの指定）
 
-以下の対象について、設定済みのMCPツール（GitHub/Backlog用）を使用して直接内容を読み取り、仕様理解・設計・テスト・実装・PR作成までを完結させよ。
-成果物は作業対象プロジェクトのルートを起点として扱う。正本テンプレートは `~/.agent/templates/issue-driven/` から参照し、`<project-root>/docs/ai_work/` や `<project-root>/.github/PULL_REQUEST_TEMPLATE/issue-driven.md` がなければ、その正本から生成してから使用すること。このテンプレート自体を開始プロンプトとして使用すること。
+設定済みのMCPツール（GitHub/Backlog用）を使用して以下の対象の内容を直接読み取り、仕様理解・設計・テスト・実装・PR作成までを完結させよ。
 
 **対象の指定:**
 [ここに GitHub URL、Issue番号、または Backlogの課題キーを入力。コピペした内容がある場合はそれも併記]
+
+## 1-a. 成果物とテンプレートの管理規約
+
+- 成果物は作業対象プロジェクトのルートを起点として扱う。
+- 正本テンプレートは `~/.agent/templates/issue-driven/` から参照する。
+- `<project-root>/docs/ai_work/` や `<project-root>/.github/PULL_REQUEST_TEMPLATE/issue-driven.md` が存在しなければ、正本から生成してから使用すること。
 
 ## 2. ワークフロー（フェーズ分割）
 
@@ -28,13 +33,13 @@
 - 設計書は `~/.agent/templates/issue-driven/design.md` を元に `<project-root>/docs/ai_work/designs/<ticket-id>-design.md` を生成し、テスト仕様書は `~/.agent/templates/issue-driven/test-plan.md` を元に `<project-root>/docs/ai_work/test-plans/<ticket-id>-test-plan.md` を生成して記録せよ。必要なディレクトリがなければ作成せよ。
 - 設計書の最低限の見出しは `Design` / `Ticket` / `Background` / `Scope` / `Design Decisions` / `Risks` とする。
 - テスト仕様書の最低限の見出しは `Test Plan` / `Ticket` / `Test Targets` / `Test Cases` / `Risks / Unknowns` とする。
-- **記録後、実装に進まずに一旦停止し、設計の要約を報告してユーザーの承認を待て。**
+- **記録後、実装に進まずに一旦停止し、設計の要約を報告して「設計・ブランチ作成・実装開始」の承認をユーザーから得るまで待て。この承認をもってブランチ作成の確認も兼ねる。**
 
 ### フェーズ2：自律実装と検証ループ
 
 - 承認後、作業用ブランチを作成し実装に着手せよ。
 - 「実装コード」と「テストコード」をセットで作成・修正せよ。
-- テストが失敗した場合は、設定ファイル（AGENTS.md等）の修正ループ上限に従い、自律的にデバッグと修正を繰り返せ。
+- テストが失敗した場合は、**最大5回を上限**に自律的にデバッグと修正を繰り返せ（AGENTS.md の修正ループ上限に従う）。5回を超えても解決しない場合は、試行錯誤の経緯と詰まっている箇所を整理して報告し、中断せよ。
 
 ### フェーズ3：成果物の提出（PR作成）
 
