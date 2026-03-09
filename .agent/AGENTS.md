@@ -27,10 +27,18 @@
 
 ## モード①：Issue/チケットドリブン開発
 
+- 着手時は、`autonomous-ai-agent-development/issue-driven/master-prompt.md` を**必ず開始テンプレートとして使用**する。
+- Issue/チケットドリブン開発で使う**正本テンプレート**は、この設定リポジトリの `.agent/templates/issue-driven/` に置き、`~/.agent/templates/issue-driven/` 経由で参照する。
+- 成果物とプロジェクト側テンプレートは、**作業対象プロジェクトのルート**を起点として扱う。必要なディレクトリやファイルがなければ、`~/.agent/templates/issue-driven/` の正本テンプレートからそのプロジェクト側に生成してから使用する。
+- 成果物は原則として `<project-root>/docs/ai_work/` 配下へ保存し、以下を最低限そろえる。
+  - 設計書: `<project-root>/docs/ai_work/designs/<ticket-id>-design.md`
+  - テスト仕様書: `<project-root>/docs/ai_work/test-plans/<ticket-id>-test-plan.md`
+  - PR本文ドラフト: `<project-root>/docs/ai_work/pr-body-drafts/<ticket-id>-pr-body.md`
+
 ### フェーズ1：調査と設計（人間承認必須・実装前に完了）
 
 1. 設定済みMCPツールを用いてIssue/チケットの最新内容（本文・コメント）を取得する。
-2. コードベースを解析し、「設計書」と「テスト仕様書」を作成してプロジェクト内の既存ドキュメント用ディレクトリ（例: `docs/` 配下。必要に応じて `docs/ai_work/` を作成）に保存する。
+2. コードベースを解析し、「設計書」と「テスト仕様書」を作成して `<project-root>/docs/ai_work/designs/` および `<project-root>/docs/ai_work/test-plans/` に保存する。ディレクトリがなければ先に作成する。
 3. 設計の要約をユーザーに報告し、**「実装フェーズへの移行許可」を得るまで待機**する。
 
 ### フェーズ2：自律実装ループ（承認後〜PR提出まで）
@@ -40,9 +48,14 @@
 - テスト失敗時は「実装の不備」を疑い、**最大5回を上限に自律修正ループ**を回す。
 - 5回を超えても解決しない場合は、試行錯誤の経緯と詰まっている箇所を整理して報告し、中断する。
 
+### フェーズ3：成果物の提出（PR作成前に整理）
+
+- PR本文ドラフトを `<project-root>/docs/ai_work/pr-body-drafts/` に保存する。ディレクトリがなければ先に作成する。
+- Issue/チケットドリブン開発で使うPR本文は、`~/.agent/templates/issue-driven/pr-template.md` を正本として `<project-root>/.github/PULL_REQUEST_TEMPLATE/issue-driven.md` を生成し、それを使って組み立てる。
+
 ### 自律作業を中断して報告・承認を求める条件（例外）
 
-以下が発生した場合のみ自律作業を中断し、ユーザーに通知して承認を待つ：
+以下が発生した場合のみ自律作業を中断し、`sh ~/.agent/notification/notify.sh` を試行したうえで、ユーザーに通知して承認を待つ：
 
 - **計画外の仕様変更・アーキテクチャ変更**が必要と判明した（当初の設計書に含まれていない変更）
 - セキュリティ・本番環境に直接影響する変更が必要と判明した
