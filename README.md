@@ -10,6 +10,8 @@ ai-agent-orchestration-settings/
 │   ├── AGENTS.md                # 共通ルール
 │   ├── skills/                  # 共通スキル（Codex/Claude/Gemini対応）
 │   ├── commands/                # 共通カスタムコマンド（Codex/Claude/Gemini対応）
+│   ├── templates/
+│   │   └── issue-driven/        # Issue/チケットドリブン用の正本テンプレート
 │   └── notification/
 │       └── notify.sh            # クロスプラットフォーム通知スクリプト
 ├── .claude/
@@ -19,6 +21,8 @@ ai-agent-orchestration-settings/
 │   └── config.shared.toml       # Codex 共有設定（セキュリティ設定含む）
 ├── .gemini/
 │   └── settings.json            # Gemini CLI セキュリティ設定
+├── .github/
+│   └── pull_request_template.md # この設定リポジトリ自身の通常PRテンプレート
 ├── docs/
 │   ├── claude/
 │   │   └── SETTINGS_GUIDE.md    # Claude Code 設定ガイド
@@ -26,6 +30,9 @@ ai-agent-orchestration-settings/
 │   │   └── SETTINGS_GUIDE.md    # Codex CLI 設定ガイド
 │   └── gemini/
 │       └── SETTINGS_GUIDE.md    # Gemini CLI 設定ガイド
+├── autonomous-ai-agent-development/
+│   └── issue-driven/
+│       └── master-prompt.md     # Issue/チケットドリブン開発の開始テンプレート
 ├── prompts/                     # 人間向けドキュメント用
 └── scripts/
     ├── check-and-cleanup.sh     # クリーンアップ確認スクリプト
@@ -34,6 +41,16 @@ ai-agent-orchestration-settings/
 ```
 
 ## 使い方
+
+### 運用モード
+
+- **通常指示**: `.agent/AGENTS.md` の通常指示ルールに従って作業します。PR本文は `.github/pull_request_template.md` を使います。
+- **Issue/チケットドリブン開発**: `.agent/AGENTS.md` の Issue/チケットドリブン開発ルールに従い、開始時に `.agent/commands/issue-driven-start.md` または `autonomous-ai-agent-development/issue-driven/master-prompt.md` を使います。
+- このリポジトリは**共通設定を配布するためのリポジトリ**であり、Issue/チケットドリブン開発で使う正本テンプレートは `.agent/templates/issue-driven/` に置きます。
+- 実際に作業対象プロジェクトへ出力する成果物や専用PRテンプレートは、`~/.agent/templates/issue-driven/` の正本テンプレートを元に `<project-root>` 配下へ生成して使います。
+- Issue/チケットドリブン開発の成果物は `<project-root>/docs/ai_work/designs/`、`<project-root>/docs/ai_work/test-plans/`、`<project-root>/docs/ai_work/pr-body-drafts/` に保存し、存在しなければ作成します。
+- Issue/チケットドリブン開発のPR本文は `~/.agent/templates/issue-driven/pr-template.md` を元に `<project-root>/.github/PULL_REQUEST_TEMPLATE/issue-driven.md` を生成して使います。
+- 例外条件に入った場合は、`sh ~/.agent/notification/notify.sh` を試行してから承認待ちを通知します。
 
 ### 1. クローン
 
@@ -72,7 +89,7 @@ chmod +x scripts/check-and-cleanup.sh scripts/setup-mcp.sh scripts/sync-codex-co
 ### 3. ディレクトリ準備
 
 ```bash
-mkdir -p ~/.codex ~/.claude ~/.gemini ~/.agent/notification ~/.local/bin
+mkdir -p ~/.codex ~/.claude ~/.gemini ~/.agent ~/.agent/notification ~/.local/bin
 ```
 
 ### 4. PATH 設定の確認
@@ -136,6 +153,7 @@ ls -la ~/.gemini/skills
 ls -la ~/.gemini/commands
 ls -la ~/.gemini/settings.json
 ls -la ~/.agent/notification/notify.sh
+ls -la ~/.agent/templates
 ls -la ~/.local/bin/setup-mcp
 ls -la ~/.local/bin/sync-codex-config
 ```
@@ -218,6 +236,18 @@ ln -s ~/ai-agent-orchestration-settings/.agent/notification/notify.sh ~/.agent/n
 
 # 絶対パスで指定する場合
 ln -s /path/to/ai-agent-orchestration-settings/.agent/notification/notify.sh ~/.agent/notification/notify.sh
+```
+
+#### 共通テンプレートのリンク
+
+Issue/チケットドリブン開発で使う正本テンプレートを `~/.agent/templates` から参照できるようにします。
+
+```bash
+# 例: ホームディレクトリにクローンした場合
+ln -s ~/ai-agent-orchestration-settings/.agent/templates ~/.agent/templates
+
+# 絶対パスで指定する場合
+ln -s /path/to/ai-agent-orchestration-settings/.agent/templates ~/.agent/templates
 ```
 
 ### 7. セキュリティ設定のリンク（重要）
@@ -394,7 +424,7 @@ setup-mcp
 | `github-mcp-server` | GitHub 操作 | `GITHUB_MCP_API_TOKEN` |
 | `backlog` | Backlog 操作 | `BACKLOG_DOMAIN`, `BACKLOG_API_KEY` |
 | `drawio` | Draw.io 図作成 | - |
-| `docker` | Docker 操作 | - |
+| `docker` | Docker 操作 | WSL 環境では `DOCKER_MCP_IN_CONTAINER=1` が必要（後述） |
 | `chrome-devtools` | ブラウザ操作 | - |
 | `playwright` | ブラウザ自動操作 | - |
 
@@ -660,3 +690,21 @@ chmod +x ~/.claude/statusline.sh
 ```bash
 grep -A 5 "statusLine" ~/.claude/settings.json
 ```
+
+### WSL 環境で Docker MCP が connected にならない
+
+WSL（Windows Subsystem for Linux）から `docker mcp gateway run` を実行すると、Docker Desktop が稼働中でも `Docker Desktop is not running` エラーが発生する場合があります。
+
+`.claude/mcp.json` の `docker` エントリに `DOCKER_MCP_IN_CONTAINER=1` 環境変数を追加してください。本リポジトリの設定にはすでに含まれていますが、手動で設定している場合は以下を参考にしてください：
+
+```json
+"docker": {
+  "command": "docker",
+  "args": ["mcp", "gateway", "run"],
+  "env": {
+    "DOCKER_MCP_IN_CONTAINER": "1"
+  }
+}
+```
+
+設定後、`setup-mcp` を実行して Claude Code を再起動してください。
