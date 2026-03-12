@@ -13,34 +13,47 @@ model_name=$(echo "$input" | jq -r '.model.display_name // "Claude"')
 session_id=$(echo "$input" | jq -r '.session_id // ""')
 output_style=$(echo "$input" | jq -r '.output_style.name // "default"')
 
-# ディレクトリ情報の整理
+# Windowsパスの正規化
 if [[ -n "$project_dir" ]]; then
-    repo_name=$(basename "$project_dir")
-    if [[ "$current_dir" == "$project_dir" ]]; then
+    normalized_project_dir=$(echo "$project_dir" | sed 's|\\|/|g')
+else
+    normalized_project_dir=""
+fi
+if [[ -n "$current_dir" ]]; then
+    normalized_current_dir=$(echo "$current_dir" | sed 's|\\|/|g')
+else
+    normalized_current_dir=""
+fi
+
+# ディレクトリ情報の整理
+if [[ -n "$normalized_project_dir" ]]; then
+    repo_name=$(basename "$normalized_project_dir")
+    if [[ "$normalized_current_dir" == "$normalized_project_dir" ]]; then
         work_dir="/"
     else
-        work_dir=${current_dir#$project_dir}
+        work_dir=${normalized_current_dir#$normalized_project_dir}
         work_dir=${work_dir:-"/"}
     fi
 else
-    repo_name=$(basename "$current_dir")
+    repo_name=$(basename "$normalized_current_dir")
     work_dir="/"
 fi
 
-# Git情報の取得 (エラーを抑制し、軽量化)
-if [[ -n "$project_dir" ]]; then
-    cd "$project_dir" 2>/dev/null
-elif [[ -n "$current_dir" ]]; then
-    cd "$current_dir" 2>/dev/null
+# Git情報の取得 (安全な git -C を使用)
+git_target_dir=""
+if [[ -n "$normalized_project_dir" ]]; then
+    git_target_dir="$normalized_project_dir"
+elif [[ -n "$normalized_current_dir" ]]; then
+    git_target_dir="$normalized_current_dir"
 fi
 
-# Git情報 (タイムアウトとエラー抑制で軽量化)
+# Git情報 (git -C による安全なディレクトリ指定)
 git_info=""
-if timeout 1 git rev-parse --git-dir >/dev/null 2>&1; then
-    branch=$(timeout 1 git branch --show-current 2>/dev/null || echo "detached")
+if [[ -n "$git_target_dir" ]] && timeout 1 git -C "$git_target_dir" rev-parse --git-dir >/dev/null 2>&1; then
+    branch=$(timeout 1 git -C "$git_target_dir" branch --show-current 2>/dev/null || echo "detached")
     
     # 変更ファイル数を取得 (軽量化)
-    changes=$(timeout 1 git status --porcelain 2>/dev/null | wc -l)
+    changes=$(timeout 1 git -C "$git_target_dir" status --porcelain 2>/dev/null | wc -l)
     if [[ "$changes" -gt 0 ]]; then
         git_info=" ${branch}(${changes})"
     else

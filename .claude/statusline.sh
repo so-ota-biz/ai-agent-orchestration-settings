@@ -10,21 +10,23 @@ input=$(cat)
 current_dir=$(echo "$input" | jq -r '.workspace.current_dir // .cwd')
 model_name=$(echo "$input" | jq -r '.model.display_name // .model.id')
 
-# カレントディレクトリの表示（Windows パス対応）
-current_dir_display=$(echo "$current_dir" | sed 's|\\|/|g' | sed "s|^C:/Users/$(whoami)|~|")
+# Windowsパスの正規化
+normalized_dir=$(echo "$current_dir" | sed 's|\\|/|g')
 
-# Git情報の取得
-if [ -d "$(echo "$current_dir" | sed 's|\\|/|g')/.git" ] || git -C "$(echo "$current_dir" | sed 's|\\|/|g')" rev-parse --git-dir >/dev/null 2>&1; then
-    cd "$(echo "$current_dir" | sed 's|\\|/|g')" 2>/dev/null || true
-    repo_name=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || echo "$current_dir")")
-    branch_name=$(git branch --show-current 2>/dev/null || echo "unknown")
+# カレントディレクトリの表示（Windows パス対応）
+current_dir_display=$(echo "$normalized_dir" | sed "s|^C:/Users/$(whoami)|~|")
+
+# Git情報の取得 (git -C による安全なディレクトリ指定)
+if [ -d "${normalized_dir}/.git" ] || git -C "$normalized_dir" rev-parse --git-dir >/dev/null 2>&1; then
+    repo_name=$(basename "$(git -C "$normalized_dir" rev-parse --show-toplevel 2>/dev/null || echo "$normalized_dir")")
+    branch_name=$(git -C "$normalized_dir" branch --show-current 2>/dev/null || echo "unknown")
     
     # Git状態の取得
-    git_status=$(git status --porcelain 2>/dev/null || echo "")
-    added=$(echo "$git_status" | grep -c "^A" 2>/dev/null || echo "0")
-    modified=$(echo "$git_status" | grep -c "^.M\|^M" 2>/dev/null || echo "0")
-    deleted=$(echo "$git_status" | grep -c "^.D\|^D" 2>/dev/null || echo "0")
-    untracked=$(echo "$git_status" | grep -c "^??" 2>/dev/null || echo "0")
+    git_status=$(git -C "$normalized_dir" status --porcelain 2>/dev/null || echo "")
+    added=$(echo "$git_status" | grep -c "^A" 2>/dev/null | tr -d '\n' || echo "0")
+    modified=$(echo "$git_status" | grep -c "^.M\|^M" 2>/dev/null | tr -d '\n' || echo "0")
+    deleted=$(echo "$git_status" | grep -c "^.D\|^D" 2>/dev/null | tr -d '\n' || echo "0")
+    untracked=$(echo "$git_status" | grep -c "^??" 2>/dev/null | tr -d '\n' || echo "0")
     
     # 変更状況の表示
     changes=""
@@ -38,9 +40,9 @@ else
     git_info="📁 $(basename "$current_dir_display")"
 fi
 
-# コンテキスト使用率（ダミー値）
-context_percent=53
-context_bar="████████░░░░░░░"
+# コンテキスト使用率（プレースホルダー）
+context_percent="--"
+context_bar="--"
 
 # モデル名の短縮
 case "$model_name" in
@@ -53,4 +55,4 @@ esac
 # ステータスラインの出力
 printf "📂 %s\n" "$current_dir_display"
 printf "%s\n" "$git_info"
-printf "🧠 %s %d%% │ %s\n" "$context_bar" "$context_percent" "$model_display"
+printf "🧠 %s %s │ %s\n" "$context_bar" "$context_percent" "$model_display"
