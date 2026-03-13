@@ -115,5 +115,9 @@
   "defaultMode": "ask",
   "enabledPlugins": {
     "example-skills@anthropic-agent-skills": true
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline.sh"
   }
 }
