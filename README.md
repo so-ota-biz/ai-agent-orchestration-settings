@@ -461,6 +461,8 @@ ls -la ~/.gemini
 ls -la ~/.agent/notification/notify.sh
 ls -la ~/.local/bin/setup-mcp
 ls -la ~/.local/bin/sync-codex-config
+# ステータスラインスクリプト（Claude Code のみ）
+ls -la ~/.claude/statusline.sh
 ```
 
 #### 同期スクリプトの動作確認
@@ -504,6 +506,101 @@ ls -la ~/.gemini/commands
 
 # いずれも .agent/commands へのシンボリックリンクになっているはず
 ```
+
+### 12. Claude Code ステータスライン設定（オプション）
+
+Claude Code のステータスラインをカスタマイズして、現在の作業状況を一目で把握できるようにします。
+
+#### ステータスライン表示内容
+
+- **1行目**: カレントディレクトリ（`~` 省略表記対応）
+- **2行目**: リポジトリ名・Gitブランチと変更状況
+- **3行目**: コンテキスト使用率・モデル名
+
+#### 設定方法
+
+**推奨：Claude Code の `/statusline` コマンドを使用**
+
+Claude Code 内で以下のコマンドを実行してください：
+
+```
+/statusline 📂 現在の作業ディレクトリ
+🐙 リポジトリ名 │ 🌿 ブランチ名 変更状況
+🧠 ████████░░░░░░░ 使用率% │ 💪 モデル名
+```
+
+このコマンドにより、Claude Code が自動的に：
+1. `~/.claude/settings.json` にステータスライン設定を追加
+2. `~/.claude/statusline.sh` スクリプトを自動生成
+
+#### ステータスラインスクリプトのリンク（手動設定の場合）
+
+`/statusline` コマンドではなく手動で設定する場合は、以下の手順でシンボリックリンクを作成してください：
+
+**Unix/Linux/macOS/WSL の場合:**
+
+```bash
+# 例: ホームディレクトリにクローンした場合
+ln -s ~/ai-agent-orchestration-settings/.claude/statusline.sh ~/.claude/statusline.sh
+
+# 絶対パスで指定する場合
+ln -s /path/to/ai-agent-orchestration-settings/.claude/statusline.sh ~/.claude/statusline.sh
+```
+
+**Windows (PowerShell) の場合:**
+
+```powershell
+# 例: ホームディレクトリにクローンした場合（管理者権限不要）
+New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.claude\statusline.sh" -Value "$env:USERPROFILE\ai-agent-orchestration-settings\.claude\statusline.sh"
+
+# 絶対パスで指定する場合
+New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.claude\statusline.sh" -Value "C:\path\to\ai-agent-orchestration-settings\.claude\statusline.sh"
+```
+
+**Windows (コマンドプロンプト) の場合:**
+
+```cmd
+:: 管理者権限で実行
+:: 例: ホームディレクトリにクローンした場合
+mklink "%USERPROFILE%\.claude\statusline.sh" "%USERPROFILE%\ai-agent-orchestration-settings\.claude\statusline.sh"
+
+:: 絶対パスで指定する場合
+mklink "%USERPROFILE%\.claude\statusline.sh" "C:\path\to\ai-agent-orchestration-settings\.claude\statusline.sh"
+```
+
+#### ステータスライン有効化
+
+- `/statusline` コマンドを使用した場合は、自動的に設定が有効になります
+- 手動設定の場合は、`~/.claude/settings.json` に以下の設定を追加してください：
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline.sh"
+  }
+}
+```
+
+#### ステータスラインの動作確認
+
+```bash
+# ステータスラインスクリプトが正しく動作するか確認（手動テスト）
+echo '{"workspace":{"current_dir":"'$(pwd)'"},"model":{"display_name":"claude-sonnet-4"}}' | bash ~/.claude/statusline.sh
+```
+
+正常に動作している場合、以下のような3行の出力が表示されます：
+
+```
+📂 ~/repos/ai/ai-agent-orchestration-settings
+🐙 ai-agent-orchestration-settings │ 🌿 main +2 ~1
+🧠 ████████░░░░░░░ 53% │ 💪 claude-sonnet-4
+```
+
+#### トラブルシューティング
+
+- ステータスラインが表示されない場合は、Claude Code を再起動してください
+- Windows で権限エラーが発生する場合：`chmod +x ~/.claude/statusline.sh`
 
 ## 設計思想
 
@@ -564,6 +661,35 @@ chmod +x /path/to/ai-agent-orchestration-settings/scripts/sync-codex-config.sh
 - Codex: `~/.codex/prompts` が `.agent/commands` にリンクされているか確認
 - Claude Code: `~/.claude/commands` が `.agent/commands` にリンクされているか確認
 - ツールを再起動して設定を再読み込みしてください
+
+### ステータスラインが表示されない（Claude Code）
+
+**推奨解決方法：`/statusline` コマンドの使用**
+
+Claude Code 内で `/statusline` コマンドを実行して自動設定してください。これにより適切な設定とスクリプトが生成されます。
+
+**手動設定の場合のトラブルシューティング：**
+
+- Claude Code を再起動してください
+- `~/.claude/statusline.sh` のシンボリックリンクが正しく作成されているか確認してください
+- ステータスラインスクリプトが動作するか手動確認してください：
+
+```bash
+echo '{"workspace":{"current_dir":"'$(pwd)'"},"model":{"display_name":"claude-sonnet-4"}}' | bash ~/.claude/statusline.sh
+```
+
+- Windows で Git Bash を使用している場合、シンボリックリンクの権限に問題がある可能性があります：
+
+```bash
+# Windows で権限エラーが発生する場合
+chmod +x ~/.claude/statusline.sh
+```
+
+- `~/.claude/settings.json` にステータスライン設定が含まれているか確認してください：
+
+```bash
+grep -A 5 "statusLine" ~/.claude/settings.json
+```
 
 ### WSL 環境で Docker MCP が connected にならない
 
