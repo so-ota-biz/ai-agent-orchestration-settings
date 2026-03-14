@@ -1,4 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env sh
+
+if command -v bash >/dev/null 2>&1; then
+  exec bash ~/.claude/statusline.sh
+fi
+
+printf "statusline: bash not found"
 
 # ステータスライン表示スクリプト
 # 2行表示: 1行目にプロジェクト情報、2行目にセッション情報
