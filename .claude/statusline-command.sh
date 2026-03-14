@@ -36,11 +36,21 @@ else
     [ -z "$model_name" ] && model_name="Claude"
     output_style=$(echo "$input" | sed -n 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
     [ -z "$output_style" ] && output_style="default"
-    current_dir=""
-    project_dir=""
+    
+    # workspace.current_dir の抽出
+    current_dir=$(echo "$input" | sed -n 's/.*"current_dir"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+    
+    # workspace.project_dir の抽出
+    project_dir=$(echo "$input" | sed -n 's/.*"project_dir"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+    
+    # cost.total_duration_ms の抽出
+    total_duration_ms=$(echo "$input" | sed -n 's/.*"total_duration_ms"[[:space:]]*:[[:space:]]*\([0-9]\+\).*/\1/p' | head -1)
+    
+    # exceeds_200k_tokens の抽取
+    exceeds_200k=$(echo "$input" | sed -n 's/.*"exceeds_200k_tokens"[[:space:]]*:[[:space:]]*\(true\|false\).*/\1/p' | head -1)
+    [ -z "$exceeds_200k" ] && exceeds_200k="false"
+    
     session_id=""
-    total_duration_ms=""
-    exceeds_200k="false"
 fi
 
 echo "current_dir: '$current_dir'" >> ~/.claude/statusline-debug.log
