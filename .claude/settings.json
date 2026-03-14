@@ -1,6 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "respectGitignore": true,
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "120000",
     "BASH_MAX_TIMEOUT_MS": "600000",
@@ -8,6 +7,7 @@
     "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "true"
   },
   "permissions": {
+    "disableBypassPermissionsMode": "disable",
     "allow": [
       "Read",
       "Glob",
@@ -83,41 +83,14 @@
       "Write(.gitignore)",
       "Write(Dockerfile)",
       "Write(docker-compose.yml)"
-    ],
-    "disableBypassPermissionsMode": "disable"
+    ]
   },
   "enableAllProjectMcpServers": false,
-  "extraKnownMarketplaces": {
-    "anthropic-agent-skills": {
-      "source": {
-        "source": "github",
-        "repo": "anthropics/skills"
-      }
-    }
-  },
-  "sandbox": {
-    "enabled": false,
-    "autoAllowBashIfSandboxed": false,
-    "filesystem": {
-      "denyWrite": [
-        "~/.ssh",
-        "~/.aws",
-        "~/.config/gcloud"
-      ],
-      "denyRead": [
-        "~/.ssh/id_rsa",
-        "~/.ssh/id_ed25519",
-        "~/.aws/credentials"
-      ]
-    },
-    "allowedDomains": []
-  },
-  "defaultMode": "ask",
   "enabledPlugins": {
-    "example-skills@anthropic-agent-skills": true
+    "anthropic-agent-skills": ["example-skills"]
   },
   "statusLine": {
     "type": "command",
-    "command": "bash ~/.claude/statusline.sh"
+    "command": "sh ~/.claude/statusline-command.sh"
   }
 }
