@@ -1,11 +1,6 @@
 #!/usr/bin/env sh
 
-if ! command -v bash >/dev/null 2>&1; then
-  printf "statusline: bash not found\n"
-  exit 1
-fi
-
-# bash が利用可能な場合、以下をbashで実行
+# ステータスライン表示スクリプト - POSIX sh 互換
 
 # ステータスライン表示スクリプト
 # 2行表示: 1行目にプロジェクト情報、2行目にセッション情報
@@ -13,12 +8,25 @@ fi
 # JSONデータを取得
 input=$(cat)
 
+# jq の存在確認
+if ! command -v jq >/dev/null 2>&1; then
+    # jqが存在しない場合の簡易表示
+    printf "\033[1;36m%s\033[0m:\033[1;32m%s\033[0m\033[1;33m%s\033[0m\n" "$(basename "$PWD")" "/" " no-jq"
+    printf "\033[0;37m%s\033[0m \033[0;35m[%s]\033[0m \033[0;34m%s\033[0m \033[0;36m%s\033[0m\n" "Claude" "default" "--" "jq required"
+    exit 0
+fi
+
+
 # 基本情報の抽出
-current_dir=$(echo "$input" | jq -r '.workspace.current_dir // empty')
+current_dir=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // empty')
 project_dir=$(echo "$input" | jq -r '.workspace.project_dir // empty')
-model_name=$(echo "$input" | jq -r '.model.display_name // "Claude"')
+model_name=$(echo "$input" | jq -r '.model.display_name // .model.id // "Claude"')
 session_id=$(echo "$input" | jq -r '.session_id // ""')
-output_style=$(echo "$input" | jq -r '.output_style.name // "default"')
+output_style=$(echo "$input" | jq -r 'if .output_style | type == "object" then .output_style.name else (.output_style // "default") end' 2>/dev/null || echo "default")
+
+# セッション時間情報の抽出  
+total_duration_ms=$(echo "$input" | jq -r '.cost.total_duration_ms // empty')
+exceeds_200k=$(echo "$input" | jq -r '.exceeds_200k_tokens // false')
 
 # Windowsパスの正規化
 if [ -n "$project_dir" ]; then
@@ -54,13 +62,24 @@ elif [ -n "$normalized_current_dir" ]; then
     git_target_dir="$normalized_current_dir"
 fi
 
+# timeout コマンドの検出
+run_with_timeout() {
+    if command -v timeout >/dev/null 2>&1; then
+        timeout 1 "$@"
+    elif command -v gtimeout >/dev/null 2>&1; then
+        gtimeout 1 "$@"
+    else
+        "$@"
+    fi
+}
+
 # Git情報 (git -C による安全なディレクトリ指定)
 git_info=""
-if [ -n "$git_target_dir" ] && timeout 1 git -C "$git_target_dir" rev-parse --git-dir >/dev/null 2>&1; then
-    branch=$(timeout 1 git -C "$git_target_dir" branch --show-current 2>/dev/null || echo "detached")
+if [ -n "$git_target_dir" ] && run_with_timeout git -C "$git_target_dir" rev-parse --git-dir >/dev/null 2>&1; then
+    branch=$(run_with_timeout git -C "$git_target_dir" branch --show-current 2>/dev/null || echo "detached")
     
     # 変更ファイル数を取得 (軽量化)
-    changes=$(timeout 1 git -C "$git_target_dir" status --porcelain 2>/dev/null | wc -l)
+    changes=$(run_with_timeout git -C "$git_target_dir" status --porcelain 2>/dev/null | wc -l)
     if [ "$changes" -gt 0 ]; then
         git_info=" ${branch}(${changes})"
     else
@@ -70,38 +89,54 @@ else
     git_info=" no-git"
 fi
 
-# セッション経過時間の計算 (session_idから推定)
+# セッション経過時間の計算
 session_time=""
-if [ -n "$session_id" ]; then
-    # session_idが数値部分を含む場合の簡易時間計算
-    session_start=$(echo "$session_id" | grep -o '[0-9]\+' | head -1)
-    if [ -n "$session_start" ]; then
-        current_time=$(date +%s)
-        if [ "$session_start" -lt 9999999999 ]; then  # 10桁以下なら秒でなく調整
-            session_start=$((session_start + 1700000000))  # 2023年ベースに調整
-        fi
-        elapsed=$((current_time - session_start))
-        if [ "$elapsed" -gt 0 ] && [ "$elapsed" -lt 86400 ]; then  # 1日以内なら表示
-            hours=$((elapsed / 3600))
-            minutes=$(((elapsed % 3600) / 60))
-            if [ "$hours" -gt 0 ]; then
-                session_time="${hours}h${minutes}m"
-            else
-                session_time="${minutes}m"
-            fi
+if [ -n "$total_duration_ms" ] && [ "$total_duration_ms" != "null" ] && echo "$total_duration_ms" | grep -q '^[0-9]\+$'; then
+    # ミリ秒を秒に変換
+    elapsed_seconds=$((total_duration_ms / 1000))
+    
+    if [ "$elapsed_seconds" -gt 0 ]; then
+        hours=$((elapsed_seconds / 3600))
+        minutes=$(((elapsed_seconds % 3600) / 60))
+        
+        if [ "$hours" -gt 0 ]; then
+            session_time="${hours}h${minutes}m"
+        elif [ "$minutes" -gt 0 ]; then
+            session_time="${minutes}m"
         else
-            session_time="--"
+            session_time="<1m"
         fi
     else
-        session_time="--"
+        session_time="0m"
     fi
 else
     session_time="--"
 fi
 
-# コンテキスト使用率の簡易推定
+# コンテキスト使用率の計算
 context_pct="--"
 context_bar="        "
+
+# Unicode文字の対応確認（簡易的）
+if printf '\u2588' >/dev/null 2>&1; then
+    # Unicode対応環境
+    if [ "$exceeds_200k" = "true" ]; then
+        context_pct=">200K"
+        context_bar="████████"  # 満杯表示
+    else
+        context_pct="<200K"
+        context_bar="▓▓▓     "  # 部分的に埋める
+    fi
+else
+    # ASCII文字での代替表示
+    if [ "$exceeds_200k" = "true" ]; then
+        context_pct=">200K"
+        context_bar="########"  # ASCII満杯
+    else
+        context_pct="<200K"
+        context_bar="===     "  # ASCII部分表示
+    fi
+fi
 
 # 1行目: プロジェクト情報 (明るい青と緑)
 printf "\033[1;36m%s\033[0m:\033[1;32m%s\033[0m\033[1;33m%s\033[0m" "$repo_name" "$work_dir" "$git_info"
