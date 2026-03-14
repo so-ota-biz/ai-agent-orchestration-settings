@@ -8,17 +8,11 @@
 # JSONデータを取得
 input=$(cat)
 
-# デバッグ: 入力されたJSONをログファイルに記録
-echo "=== DEBUG LOG $(date) ===" >> ~/.claude/statusline-debug.log
-echo "Input JSON: $input" >> ~/.claude/statusline-debug.log
-
 # jq の存在確認とフォールバック準備
 use_jq=true
 if ! command -v jq >/dev/null 2>&1; then
     use_jq=false
 fi
-
-echo "jq available: $use_jq" >> ~/.claude/statusline-debug.log
 
 
 # 基本情報の抽出
@@ -53,9 +47,6 @@ else
     session_id=""
 fi
 
-echo "current_dir: '$current_dir'" >> ~/.claude/statusline-debug.log
-echo "project_dir: '$project_dir'" >> ~/.claude/statusline-debug.log
-
 # Windowsパスの正規化
 if [ -n "$project_dir" ]; then
     normalized_project_dir=$(echo "$project_dir" | sed 's|\\|/|g')
@@ -67,9 +58,6 @@ if [ -n "$current_dir" ]; then
 else
     normalized_current_dir=""
 fi
-
-echo "normalized_project_dir: '$normalized_project_dir'" >> ~/.claude/statusline-debug.log
-echo "normalized_current_dir: '$normalized_current_dir'" >> ~/.claude/statusline-debug.log
 
 # ディレクトリ情報の整理
 if [ -n "$normalized_project_dir" ]; then
@@ -89,9 +77,6 @@ else
     work_dir="/"
 fi
 
-echo "repo_name: '$repo_name'" >> ~/.claude/statusline-debug.log
-echo "work_dir: '$work_dir'" >> ~/.claude/statusline-debug.log
-
 # Git情報の取得 (安全な git -C を使用)
 git_target_dir=""
 if [ -n "$normalized_project_dir" ]; then
@@ -99,8 +84,6 @@ if [ -n "$normalized_project_dir" ]; then
 elif [ -n "$normalized_current_dir" ]; then
     git_target_dir="$normalized_current_dir"
 fi
-
-echo "git_target_dir: '$git_target_dir'" >> ~/.claude/statusline-debug.log
 
 # timeout コマンドの検出
 run_with_timeout() {
@@ -115,30 +98,19 @@ run_with_timeout() {
 
 # Git情報 (git -C による安全なディレクトリ指定)
 git_info=""
-if [ -n "$git_target_dir" ]; then
-    echo "Testing git in: '$git_target_dir'" >> ~/.claude/statusline-debug.log
-    if run_with_timeout git -C "$git_target_dir" rev-parse --git-dir >/dev/null 2>&1; then
-        echo "Git repository detected!" >> ~/.claude/statusline-debug.log
+if [ -n "$git_target_dir" ] && run_with_timeout git -C "$git_target_dir" rev-parse --git-dir >/dev/null 2>&1; then
     branch=$(run_with_timeout git -C "$git_target_dir" branch --show-current 2>/dev/null || echo "detached")
     
-        # 変更ファイル数を取得 (軽量化)
-        changes=$(run_with_timeout git -C "$git_target_dir" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
-        echo "branch: '$branch', changes: '$changes'" >> ~/.claude/statusline-debug.log
-        if [ "$changes" -gt 0 ]; then
-            git_info=" ${branch}(${changes})"
-        else
-            git_info=" ${branch}"
-        fi
+    # 変更ファイル数を取得 (軽量化)
+    changes=$(run_with_timeout git -C "$git_target_dir" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+    if [ "$changes" -gt 0 ]; then
+        git_info=" ${branch}(${changes})"
     else
-        echo "Git repository NOT detected" >> ~/.claude/statusline-debug.log
-        git_info=" no-git"
+        git_info=" ${branch}"
     fi
 else
-    echo "No git_target_dir set" >> ~/.claude/statusline-debug.log
     git_info=" no-git"
 fi
-
-echo "Final git_info: '$git_info'" >> ~/.claude/statusline-debug.log
 
 # セッション経過時間の計算
 session_time=""
@@ -202,5 +174,3 @@ printf "\033[1;36m%s\033[0m:\033[1;32m%s\033[0m\033[1;33m%s\033[0m" "$repo_name"
 # 2行目: セッション情報 (見やすい色で表示)
 printf "\n\033[0;37m%s\033[0m \033[0;35m[%s]\033[0m \033[0;34m%s\033[0m \033[0;36mctx:%s%s\033[0m" \
     "$model_name" "$output_style" "$session_time" "$context_pct%" "[$context_bar]"
-
-echo "" >> ~/.claude/statusline-debug.log
