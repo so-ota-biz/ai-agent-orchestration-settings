@@ -5,6 +5,7 @@ if command -v bash >/dev/null 2>&1; then
 fi
 
 printf "statusline: bash not found"
+exit 1
 
 # ステータスライン表示スクリプト
 # 2行表示: 1行目にプロジェクト情報、2行目にセッション情報
