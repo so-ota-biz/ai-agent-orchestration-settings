@@ -28,7 +28,8 @@ else
     # jq不要のフォールバック (簡易JSON解析)
     model_name=$(echo "$input" | sed -n 's/.*"display_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
     [ -z "$model_name" ] && model_name="Claude"
-    output_style=$(echo "$input" | sed -n 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+    output_style=$(echo "$input" | sed -n 's/.*"output_style"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+    [ -z "$output_style" ] && output_style=$(echo "$input" | sed -n 's/.*"output_style"[[:space:]]*:[[:space:]]*{[^}]*"name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
     [ -z "$output_style" ] && output_style="default"
     
     # workspace.current_dir の抽出
@@ -75,6 +76,7 @@ else
     # フォールバック: PWDを使用
     repo_name=$(basename "$PWD")
     work_dir="/"
+    normalized_current_dir=$(echo "$PWD" | sed 's|\\|/|g')
 fi
 
 # Git情報の取得 (安全な git -C を使用)
