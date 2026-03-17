@@ -37,6 +37,8 @@
       "Bash(wc *)",
       "Bash(diff *)",
       "Bash(tree *)",
+      "Bash(mkdir *)",
+      "Bash(touch *)",
       "Bash(sh ~/.agent/notification/notify.sh)"
     ],
     "deny": [
@@ -63,7 +65,6 @@
       "Bash(netcat *)",
       "Bash(chmod *)",
       "Bash(chown *)",
-      "Bash(mv *)",
       "Bash(cp -r *)",
       "Bash(ssh *)",
       "Bash(scp *)",
@@ -99,7 +100,8 @@
       "Write(tsconfig.json)",
       "Write(.gitignore)",
       "Write(Dockerfile)",
-      "Write(docker-compose.yml)"
+      "Write(docker-compose.yml)",
+      "Bash(mv *)"
     ]
   },
   "enableAllProjectMcpServers": false,
