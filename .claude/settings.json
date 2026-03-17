@@ -29,8 +29,14 @@
       "Bash(cat *)",
       "Bash(grep *)",
       "Bash(find *)",
-      "Bash(mkdir *)",
-      "Bash(touch *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(which *)",
+      "Bash(whoami)",
+      "Bash(date)",
+      "Bash(wc *)",
+      "Bash(diff *)",
+      "Bash(tree *)",
       "Bash(sh ~/.agent/notification/notify.sh)"
     ],
     "deny": [
@@ -54,7 +60,18 @@
       "Bash(curl *)",
       "Bash(wget *)",
       "Bash(nc *)",
-      "Bash(netcat *)"
+      "Bash(netcat *)",
+      "Bash(chmod *)",
+      "Bash(chown *)",
+      "Bash(mv *)",
+      "Bash(cp -r *)",
+      "Bash(ssh *)",
+      "Bash(scp *)",
+      "Bash(sftp *)",
+      "Bash(ftp *)",
+      "Write(~/.ssh/**)",
+      "Write(~/.aws/**)",
+      "Write(~/.config/gcloud/**)"
     ],
     "ask": [
       "Bash(npm install *)",
