@@ -29,6 +29,14 @@
       "Bash(cat *)",
       "Bash(grep *)",
       "Bash(find *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(which *)",
+      "Bash(whoami)",
+      "Bash(date)",
+      "Bash(wc *)",
+      "Bash(diff *)",
+      "Bash(tree *)",
       "Bash(mkdir *)",
       "Bash(touch *)",
       "Bash(sh ~/.agent/notification/notify.sh)"
@@ -54,7 +62,17 @@
       "Bash(curl *)",
       "Bash(wget *)",
       "Bash(nc *)",
-      "Bash(netcat *)"
+      "Bash(netcat *)",
+      "Bash(chmod *)",
+      "Bash(chown *)",
+      "Bash(cp -r *)",
+      "Bash(ssh *)",
+      "Bash(scp *)",
+      "Bash(sftp *)",
+      "Bash(ftp *)",
+      "Write(~/.ssh/**)",
+      "Write(~/.aws/**)",
+      "Write(~/.config/gcloud/**)"
     ],
     "ask": [
       "Bash(npm install *)",
@@ -82,7 +100,8 @@
       "Write(tsconfig.json)",
       "Write(.gitignore)",
       "Write(Dockerfile)",
-      "Write(docker-compose.yml)"
+      "Write(docker-compose.yml)",
+      "Bash(mv *)"
     ]
   },
   "enableAllProjectMcpServers": false,
