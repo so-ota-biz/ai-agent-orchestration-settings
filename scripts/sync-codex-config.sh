@@ -13,7 +13,8 @@ set -euo pipefail
 # 目的:
 #   共有設定ファイル（config.shared.toml）の内容を
 #   ローカル設定ファイル（~/.codex/config.toml）に同期しつつ、
-#   Codex が自動生成する [projects."..."] セクションは保持する
+#   Codex が自動生成する [projects."..."] セクションと
+#   ローカル端末依存の [windows] セクションを保持する
 #
 # 使い方:
 #   sync-codex-config
@@ -51,7 +52,7 @@ fi
 
 # 共有設定ファイルに [projects."..."] セクションが含まれていないか確認
 # （これらは Codex が自動生成するため、共有設定には含めない）
-if rg -q '^\[projects\."' "${SHARED_CONFIG}"; then
+if grep -Eq "^\[projects\.(\"|')" "${SHARED_CONFIG}"; then
   echo "[sync-codex-config] エラー: 共有設定ファイルに [projects.\"...\"] セクションを含めることはできません: ${SHARED_CONFIG}" >&2
   exit 1
 fi
@@ -96,7 +97,9 @@ PY
 # 共有設定ファイルに top-level の notify キーが含まれていないか確認
 # （notify は環境依存のため、このスクリプトが machine-local に注入する）
 notify_check_result=0
-if ! shared_config_has_top_level_notify; then
+if shared_config_has_top_level_notify; then
+  notify_check_result=0
+else
   notify_check_result=$?
 fi
 
@@ -115,22 +118,22 @@ mkdir -p "$(dirname "${TARGET_CONFIG}")"
 
 # 一時ファイルを作成
 tmp_target="$(mktemp "${TARGET_CONFIG}.tmp.XXXXXX")"
-tmp_projects="$(mktemp "${TARGET_CONFIG}.projects.XXXXXX")"
+tmp_preserved="$(mktemp "${TARGET_CONFIG}.preserved.XXXXXX")"
 
 # スクリプト終了時に一時ファイルを削除
 cleanup() {
-  rm -f "${tmp_target}" "${tmp_projects}"
+  rm -f "${tmp_target}" "${tmp_preserved}"
 }
 trap cleanup EXIT
 
 toml_basic_escape() {
   local value
   value="$1"
-  value=${value//\/\\}
-  value=${value//"/\"}
-  value=${value//$'\t'/\t}
-  value=${value//$'\r'/\r}
-  value=${value//$'\n'/\n}
+  value=${value//\\/\\\\}
+  value=${value//\"/\\\"}
+  value=${value//$'\t'/\\t}
+  value=${value//$'\r'/\\r}
+  value=${value//$'\n'/\\n}
   printf "%s" "${value}"
 }
 
@@ -139,7 +142,7 @@ append_machine_local_notify_config() {
 
   os_type="$(uname -s)"
   case "${os_type}" in
-    MINGW* | MSYS*)
+    MINGW* | MSYS* | CYGWIN*)
       notify_program="wscript.exe"
       if ! command -v cygpath >/dev/null 2>&1; then
         echo "[sync-codex-config] エラー: Windows では cygpath が必要です。Git Bash / MSYS から再実行してください" >&2
@@ -162,27 +165,33 @@ append_machine_local_notify_config() {
   } >> "${tmp_target}"
 }
 
-# 既存のターゲット設定ファイルから [projects."..."] セクションのみを抽出
-# 以前は最初の [projects."..."] 以降を末尾まで保持していたため、
-# 非 projects セクションが後段にあると重複キーが発生する可能性があった。
+# 既存のターゲット設定ファイルから machine-local セクションのみを抽出
+# - [projects."..."] / [projects.'...'] は Codex が自動生成するため保持する
+# - [windows] はローカル端末依存のため保持する
 if [[ -f "${TARGET_CONFIG}" ]]; then
   awk '
-    BEGIN { in_projects = 0 }
+    BEGIN { in_preserved = 0 }
 
-    /^[[:space:]]*\[projects\."/ {
-      in_projects = 1
+    /^[[:space:]]*\[projects\.(["][^"]+["]|'\''[^'\'']+'\'')\][[:space:]]*$/ {
+      in_preserved = 1
+      print
+      next
+    }
+
+    /^[[:space:]]*\[windows\][[:space:]]*$/ {
+      in_preserved = 1
       print
       next
     }
 
     /^[[:space:]]*\[/ {
-      in_projects = 0
+      in_preserved = 0
     }
 
-    in_projects {
+    in_preserved {
       print
     }
-  ' "${TARGET_CONFIG}" > "${tmp_projects}"
+  ' "${TARGET_CONFIG}" > "${tmp_preserved}"
 fi
 
 # machine-local notify を最初に書き出し、その後に共有設定を追記する
@@ -190,10 +199,10 @@ fi
 append_machine_local_notify_config
 cat "${SHARED_CONFIG}" >> "${tmp_target}"
 
-# 抽出したプロジェクトセクションがあれば、一時ファイルに追記
-if [[ -s "${tmp_projects}" ]]; then
+# 抽出した machine-local セクションがあれば、一時ファイルに追記
+if [[ -s "${tmp_preserved}" ]]; then
   printf "\n" >> "${tmp_target}"
-  cat "${tmp_projects}" >> "${tmp_target}"
+  cat "${tmp_preserved}" >> "${tmp_target}"
 fi
 
 # 一時ファイルでターゲット設定ファイルを置き換え
@@ -201,11 +210,15 @@ mv "${tmp_target}" "${TARGET_CONFIG}"
 
 # 同期完了メッセージ
 echo "[sync-codex-config] ${SHARED_CONFIG} から ${TARGET_CONFIG} に同期しました"
-if [[ -s "${tmp_projects}" ]]; then
-  project_count="$(rg -c '^\[projects\."' "${tmp_projects}" || true)"
+if [[ -s "${tmp_preserved}" ]]; then
+  project_count="$(grep -Ec '^\[projects\.' "${tmp_preserved}" || true)"
   echo "[sync-codex-config] ${project_count} 個のプロジェクトセクションを保持しました"
 else
   echo "[sync-codex-config] 保持するプロジェクトセクションはありませんでした"
+fi
+
+if rg -q '^\[windows\]$' "${tmp_preserved}" 2>/dev/null; then
+  echo "[sync-codex-config] [windows] セクションを保持しました"
 fi
 
 echo "[sync-codex-config] Machine-local notify command を設定しました"
