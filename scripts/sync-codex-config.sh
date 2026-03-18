@@ -57,6 +57,13 @@ if grep -Eq "^\[projects\.(\"|')" "${SHARED_CONFIG}"; then
   exit 1
 fi
 
+# 共有設定ファイルに [windows] セクションが含まれていないか確認
+# （これはローカル端末依存のため、共有設定には含めない）
+if grep -Eq "^[[:space:]]*\[windows\][[:space:]]*$" "${SHARED_CONFIG}"; then
+  echo "[sync-codex-config] エラー: 共有設定ファイルに [windows] セクションを含めることはできません: ${SHARED_CONFIG}" >&2
+  exit 1
+fi
+
 shared_config_has_top_level_notify() {
   local python_cmd
 
