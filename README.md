@@ -50,7 +50,7 @@ ai-agent-orchestration-settings/
 - 実際に作業対象プロジェクトへ出力する成果物や専用PRテンプレートは、`~/.agent/templates/issue-driven/` の正本テンプレートを元に `<project-root>` 配下へ生成して使います。
 - Issue/チケットドリブン開発の成果物は `<project-root>/docs/ai_work/designs/`、`<project-root>/docs/ai_work/test-plans/`、`<project-root>/docs/ai_work/pr-body-drafts/` に保存し、存在しなければ作成します。
 - Issue/チケットドリブン開発のPR本文は `~/.agent/templates/issue-driven/pr-template.md` を元に `<project-root>/.github/PULL_REQUEST_TEMPLATE/issue-driven.md` を生成して使います。
-- 例外条件に入った場合は、`sh ~/.agent/notification/notify.sh` を試行してから承認待ちを通知します。
+- 例外条件に入った場合は、利用中エージェントの標準通知機構を優先し、必要な場合のみ `sh ~/.agent/notification/notify.sh` をフォールバックとして試行してから承認待ちを通知します。
 
 ### 1. クローン
 
@@ -228,7 +228,7 @@ ln -s /path/to/ai-agent-orchestration-settings/.agent/commands ~/.gemini/command
 
 #### 共通通知スクリプトのリンク
 
-`AGENTS.md` で完了通知コマンドとして `sh ~/.agent/notification/notify.sh` を実行するため、以下のリンクを作成します。
+標準通知機構が使えない場合の共通フォールバック通知スクリプトとして利用するため、以下のリンクを作成します。
 
 ```bash
 # 例: ホームディレクトリにクローンした場合
@@ -392,6 +392,8 @@ ln -s /path/to/ai-agent-orchestration-settings/scripts/sync-codex-config.sh ~/.l
 ```bash
 sync-codex-config
 ```
+
+`sync-codex-config` は、必要に応じて `~/.codex/config.toml` へ machine-local な top-level `notify` を注入し、Codex CLI のフォールバック通知経路として利用できるようにします。
 
 ### 9. Claude Code MCP サーバー設定
 

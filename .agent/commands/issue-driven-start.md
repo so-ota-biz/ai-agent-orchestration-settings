@@ -24,9 +24,9 @@ Issue / Backlog チケットドリブンで作業を開始してください。
    - テスト仕様書: `Test Plan` / `Ticket` / `Test Targets` / `Test Cases` / `Risks / Unknowns`
    - PR本文ドラフト: `Related Issue / Ticket` / `Summary` / `Technical Changes` / `Self-Decisions` / `Verification` / `Notes`
 7. 設計承認まではフェーズ1のみを実施し、承認後に実装へ進む。
-8. 例外発生時は `sh ~/.agent/notification/notify.sh` を試行してから、承認待ち理由をユーザーへ報告する。
+8. 例外発生時は、利用中エージェントの標準通知機構で通知し、必要な場合のみフォールバックとして `sh ~/.agent/notification/notify.sh` を試行してから、承認待ち理由をユーザーへ報告する。
 
 # 完了通知
 
-- すべての作業が終わった直後に、必ず以下のシェルコマンドを一度だけ実行してください。
-  `sh ~/.agent/notification/notify.sh`
+- すべての作業が終わった直後は、利用中エージェントの標準通知機構を優先してください。
+- 標準通知機構がない、未設定、または手動通知が必要な場合のみ、フォールバックとして `sh ~/.agent/notification/notify.sh` を一度だけ試行してください。
