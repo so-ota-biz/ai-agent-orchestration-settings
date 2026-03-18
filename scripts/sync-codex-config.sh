@@ -56,9 +56,46 @@ if rg -q '^\[projects\."' "${SHARED_CONFIG}"; then
   exit 1
 fi
 
-# 共有設定ファイルに notify キーが含まれていないか確認
+shared_config_has_top_level_notify() {
+  local python_cmd
+
+  for python_cmd in python3 python; do
+    if command -v "${python_cmd}" >/dev/null 2>&1; then
+      "${python_cmd}" - "${SHARED_CONFIG}" <<'PY'
+import pathlib
+import sys
+
+path = pathlib.Path(sys.argv[1])
+text = path.read_text(encoding="utf-8")
+
+try:
+    import tomllib  # Python 3.11+
+    data = tomllib.loads(text)
+except ModuleNotFoundError:
+    try:
+        import toml
+    except ModuleNotFoundError:
+        print("[sync-codex-config] エラー: Python の TOML パーサーが見つかりません。python3.11+ または toml パッケージが必要です", file=sys.stderr)
+        sys.exit(2)
+    data = toml.loads(text)
+except Exception as exc:
+    print(f"[sync-codex-config] エラー: 共有設定ファイルの TOML 解析に失敗しました: {path}", file=sys.stderr)
+    print(str(exc), file=sys.stderr)
+    sys.exit(2)
+
+sys.exit(0 if "notify" in data else 1)
+PY
+      return $?
+    fi
+  done
+
+  echo "[sync-codex-config] エラー: top-level notify の検査に Python が必要です" >&2
+  exit 1
+}
+
+# 共有設定ファイルに top-level の notify キーが含まれていないか確認
 # （notify は環境依存のため、このスクリプトが machine-local に注入する）
-if rg -q '^[[:space:]]*notify[[:space:]]*=' "${SHARED_CONFIG}"; then
+if shared_config_has_top_level_notify; then
   echo "[sync-codex-config] エラー: 共有設定ファイルに notify を含めることはできません: ${SHARED_CONFIG}" >&2
   echo "[sync-codex-config] notify は環境依存値のため、このスクリプトが machine-local 設定として注入します" >&2
   exit 1
@@ -88,11 +125,11 @@ append_machine_local_notify_config() {
   case "${os_type}" in
     MINGW* | MSYS*)
       notify_program="wscript.exe"
-      if command -v cygpath >/dev/null 2>&1; then
-        notify_target="$(cygpath -w "${REPO_ROOT}/.agent/notification/notify.js")"
-      else
-        notify_target="${REPO_ROOT}/.agent/notification/notify.js"
+      if ! command -v cygpath >/dev/null 2>&1; then
+        echo "[sync-codex-config] エラー: Windows では cygpath が必要です。Git Bash / MSYS から再実行してください" >&2
+        exit 1
       fi
+      notify_target="$(cygpath -w "${REPO_ROOT}/.agent/notification/notify.js")"
       ;;
     *)
       notify_program="sh"
