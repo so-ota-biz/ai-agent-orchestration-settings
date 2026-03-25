@@ -204,8 +204,12 @@ make_rate_bar() {
             bar = ""
             for (i = 0; i < full; i++) bar = bar full_block
             if (full < width) {
-                bar = bar blocks[frac]
-                for (i = 0; i < width - full - 1; i++) bar = bar empty_block
+                if (frac > 0) {
+                    bar = bar blocks[frac]
+                    for (i = 0; i < width - full - 1; i++) bar = bar empty_block
+                } else {
+                    for (i = 0; i < width - full; i++) bar = bar empty_block
+                }
             }
 
             printf "%s \033[38;2;%d;%d;%dm%s\033[0m %d%%", label, r, g, b, bar, pct_int
