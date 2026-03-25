@@ -218,6 +218,8 @@ make_rate_bar() {
     else
         # ASCII フォールバック (幅8, # で埋め・- で空)
         _pct_int=$(printf '%s' "$_pct" | awk '{printf "%d", int($1 + 0.5)}')
+        [ "$_pct_int" -lt 0 ] && _pct_int=0
+        [ "$_pct_int" -gt 100 ] && _pct_int=100
         _filled=$((_pct_int * 8 / 100))
         _bar=""
         _i=0
