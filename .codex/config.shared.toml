@@ -107,3 +107,10 @@ args = ["-y", "chrome-devtools-mcp@latest"]
 [mcp_servers.playwright]
 command = "npx"
 args = ["-y", "@playwright/mcp@latest"]
+
+# Notion MCP setting
+# Codex CLI の HTTP transport に既知バグがあるため mcp-remote 経由でホスト型エンドポイントに接続する
+# 初回起動時にブラウザで OAuth 認証が必要
+[mcp_servers.notion]
+command = "npx"
+args = ["-y", "mcp-remote", "https://mcp.notion.com/mcp"]
