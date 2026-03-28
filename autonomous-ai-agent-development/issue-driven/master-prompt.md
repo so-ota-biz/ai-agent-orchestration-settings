@@ -20,9 +20,10 @@
 
 ## 1-a. 成果物とテンプレートの管理規約
 
-- 成果物は作業対象プロジェクトのルートを起点として扱う。
 - 正本テンプレートは `~/.agent/templates/issue-driven/` から参照する。
-- `<project-root>/docs/ai_work/` や `<project-root>/.github/PULL_REQUEST_TEMPLATE/issue-driven.md` が存在しなければ、正本から生成してから使用すること。
+- 成果物の保存先（`~/docs/issue-driven` が存在しなければ許可なく作成する）:
+  - GitHub Issue の場合: `~/docs/issue-driven/<repo-name>/<issue-number>/`
+  - Backlog チケットの場合: `~/docs/issue-driven/<project-key>/<ticket-key>/`
 
 ## 2. ワークフロー（フェーズ分割）
 
@@ -30,7 +31,7 @@
 
 - MCPツールを用いて対象Issueの最新の本文およびコメントを確認せよ。
 - 現状のコードベースを分析し、変更方針（Design）とテスト計画（Test Plan）を策定せよ。
-- 設計書は `~/.agent/templates/issue-driven/design.md` を元に `<project-root>/docs/ai_work/designs/<ticket-id>-design.md` を生成し、テスト仕様書は `~/.agent/templates/issue-driven/test-plan.md` を元に `<project-root>/docs/ai_work/test-plans/<ticket-id>-test-plan.md` を生成して記録せよ。必要なディレクトリがなければ作成せよ。
+- 設計書は `~/.agent/templates/issue-driven/design.md` を元に `<ticket-id>-design.md`、テスト仕様書は `~/.agent/templates/issue-driven/test-plan.md` を元に `<ticket-id>-test-plan.md` として、上記の成果物保存先ディレクトリに生成して記録せよ。ディレクトリがなければ先に作成せよ。
 - 設計書の最低限の見出しは `Design` / `Ticket` / `Background` / `Scope` / `Design Decisions` / `Risks` とする。
 - テスト仕様書の最低限の見出しは `Test Plan` / `Ticket` / `Test Targets` / `Test Cases` / `Risks / Unknowns` とする。
 - **記録後、実装に進まずに一旦停止し、設計の要約を報告して「設計・ブランチ作成・実装開始」の承認をユーザーから得るまで待て。この承認をもってブランチ作成の確認も兼ねる。**
@@ -44,7 +45,8 @@
 ### フェーズ3：成果物の提出（PR作成）
 
 - 全ての検証をパスした後、コミットおよびプッシュを行い、プルリクエストを作成せよ。
-- PR本文ドラフトは `~/.agent/templates/issue-driven/pr-body-draft.md` を元に `<project-root>/docs/ai_work/pr-body-drafts/<ticket-id>-pr-body.md` を生成して保存し、PR本文テンプレートは `~/.agent/templates/issue-driven/pr-template.md` を元に `<project-root>/.github/PULL_REQUEST_TEMPLATE/issue-driven.md` を生成して使って組み立てよ。必要なディレクトリやテンプレートがなければ作成せよ。
+- PR本文ドラフトは `~/.agent/templates/issue-driven/pr-body-draft.md` を元に `<ticket-id>-pr-body.md` として、上記の成果物保存先ディレクトリに生成して保存せよ。
+- PR本文テンプレートは、`<project-root>/.github/` 配下に既存のPRテンプレートがあればそれを優先する。なければ `~/.agent/templates/issue-driven/pr-template.md` を雛形として直接参照して組み立てよ。プロジェクト内への複製・生成は行わない。
 - PR本文ドラフトの最低限の見出しは `Related Issue / Ticket` / `Summary` / `Technical Changes` / `Self-Decisions` / `Verification` / `Notes` とする。
 - 専用PRテンプレートの最低限の見出しは `Related Issue / Ticket` / `Summary` / `Technical Changes` / `Self-Decisions` / `Verification` / `Design / Test Docs` / `Notes` とする。
 - PRの説明欄には、設定ファイルの報告ルールに基づき「技術的詳細」「自律判断した事項」「ビジネスインパクト」「検証結果」を明記せよ。

@@ -20,7 +20,7 @@
 
 ## Design / Test Docs
 
-<!-- <project-root>/docs/ai_work/ 配下に作成した設計書・テスト仕様書・PR本文ドラフトへのパスを記載 -->
+<!-- ~/docs/issue-driven/<repo-name>/<issue-number>/ または ~/docs/issue-driven/<project-key>/<ticket-key>/ 配下に作成した設計書・テスト仕様書・PR本文ドラフトへのパスを記載 -->
 
 ## Notes
 
