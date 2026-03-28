@@ -47,7 +47,10 @@ ai-agent-orchestration-settings/
 - **通常指示**: `.agent/AGENTS.md` の通常指示ルールに従って作業します。PR本文は `.github/pull_request_template.md` を使います。
 - **Issue/チケットドリブン開発**: `.agent/AGENTS.md` の Issue/チケットドリブン開発ルールに従い、開始時に `.agent/commands/issue-driven-start.md` または `autonomous-ai-agent-development/issue-driven/master-prompt.md` を使います。
 - このリポジトリは**共通設定を配布するためのリポジトリ**であり、Issue/チケットドリブン開発で使う正本テンプレートは `.agent/templates/issue-driven/` に置きます。
-- Issue/チケットドリブン開発の成果物（設計書・テスト仕様書・PR本文ドラフト）は `~/docs/issue-driven/<repo-name>/<issue-number>/`（GitHub）または `~/docs/issue-driven/<project-key>/<ticket-key>/`（Backlog）に保存します。`~/docs/issue-driven` が存在しなければ許可なく作成します。
+- Issue/チケットドリブン開発の成果物（設計書・テスト仕様書・PR本文ドラフト）は以下のパスに保存します。`~/docs/issue-driven` が存在しなければ許可なく作成します。
+  - GitHub: `~/docs/issue-driven/github/<repo-name>/<issue-number>/`
+  - Backlog: `~/docs/issue-driven/backlog/<project-key>/<ticket-key>/`
+  - Notion: `~/docs/issue-driven/notion/<page-uuid>/`
 - Issue/チケットドリブン開発のPR本文テンプレートは、`<project-root>/.github/` 配下に既存のPRテンプレートがあればそれを優先します。なければ `~/.agent/templates/issue-driven/pr-template.md` を雛形として直接使用します。プロジェクト内への複製・生成は行いません。
 - 例外条件に入った場合は、利用中エージェントの標準通知機構を優先し、必要な場合のみ `sh ~/.agent/notification/notify.sh` をフォールバックとして試行してから承認待ちを通知します。
 

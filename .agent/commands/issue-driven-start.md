@@ -9,15 +9,16 @@ Issue / Backlog チケットドリブンで作業を開始してください。
 
 # Parameters
 
-- `$1`: 対象の GitHub Issue URL / Issue番号 / Backlog課題キー / Backlog課題URL
+- `$1`: 対象の GitHub Issue URL / Issue番号 / Backlog課題キー / Backlog課題URL / Notion ページURL / Notion Unique ID
 
 # Instructions
 
 1. `autonomous-ai-agent-development/issue-driven/master-prompt.md` を開く。
 2. `$1` をテンプレートの「対象の指定」に反映する。
 3. 成果物の保存先を以下の通り決定する（`~/docs/issue-driven` が存在しなければ許可なく作成する）。
-   - GitHub Issue の場合: `~/docs/issue-driven/<repo-name>/<issue-number>/`
-   - Backlog チケットの場合: `~/docs/issue-driven/<project-key>/<ticket-key>/`
+   - GitHub Issue の場合: `~/docs/issue-driven/github/<repo-name>/<issue-number>/`
+   - Backlog チケットの場合: `~/docs/issue-driven/backlog/<project-key>/<ticket-key>/`
+   - Notion タスクの場合: `~/docs/issue-driven/notion/<page-uuid>/`（Unique ID が渡された場合も `notion-fetch` 等で page UUID を特定してパスに使用する）
 4. 正本テンプレートは `~/.agent/templates/issue-driven/` から参照する。
 5. PR本文テンプレートは、`<project-root>/.github/` 配下に既存のPRテンプレートがあればそれを優先する。なければ `~/.agent/templates/issue-driven/pr-template.md` を雛形として直接参照して組み立てる。プロジェクト内への複製・生成は行わない。
 6. 設計書、テスト仕様書、PR本文ドラフトを新規作成する場合は、それぞれ以下の正本テンプレートを元に生成し、以下の最小見出しを満たす。
