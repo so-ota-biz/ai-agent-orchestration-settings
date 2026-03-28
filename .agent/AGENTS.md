@@ -37,16 +37,17 @@
 
 - 着手時は、`autonomous-ai-agent-development/issue-driven/master-prompt.md` を**必ず開始テンプレートとして使用**する。
 - Issue/チケットドリブン開発で使う**正本テンプレート**は、この設定リポジトリの `.agent/templates/issue-driven/` に置き、`~/.agent/templates/issue-driven/` 経由で参照する。
-- 成果物とプロジェクト側テンプレートは、**作業対象プロジェクトのルート**を起点として扱う。必要なディレクトリやファイルがなければ、`~/.agent/templates/issue-driven/` の正本テンプレートからそのプロジェクト側に生成してから使用する。
-- 成果物は原則として `<project-root>/docs/ai_work/` 配下へ保存し、以下を最低限そろえる。
-  - 設計書: `<project-root>/docs/ai_work/designs/<ticket-id>-design.md`
-  - テスト仕様書: `<project-root>/docs/ai_work/test-plans/<ticket-id>-test-plan.md`
-  - PR本文ドラフト: `<project-root>/docs/ai_work/pr-body-drafts/<ticket-id>-pr-body.md`
+- 成果物は以下のパスへ保存する（`~/docs/issue-driven` が存在しなければ許可なく作成する）。
+  - GitHub Issue の場合: `~/docs/issue-driven/<repo-name>/<issue-number>/`
+  - Backlog チケットの場合: `~/docs/issue-driven/<project-key>/<ticket-key>/`
+  - 設計書: `<上記パス>/<ticket-id>-design.md`
+  - テスト仕様書: `<上記パス>/<ticket-id>-test-plan.md`
+  - PR本文ドラフト: `<上記パス>/<ticket-id>-pr-body.md`
 
 ### フェーズ1：調査と設計（人間承認必須・実装前に完了）
 
 1. 設定済みMCPツールを用いてIssue/チケットの最新内容（本文・コメント）を取得する。
-2. コードベースを解析し、「設計書」と「テスト仕様書」を作成して `<project-root>/docs/ai_work/designs/` および `<project-root>/docs/ai_work/test-plans/` に保存する。ディレクトリがなければ先に作成する。
+2. コードベースを解析し、「設計書」と「テスト仕様書」を作成して、GitHub Issue の場合は `~/docs/issue-driven/<repo-name>/<issue-number>/`、Backlog の場合は `~/docs/issue-driven/<project-key>/<ticket-key>/` に保存する。ディレクトリがなければ先に作成する（`~/docs/issue-driven` も同様）。
 3. 設計の要約をユーザーに報告し、**「設計承認・作業ブランチ作成・実装フェーズへの移行」の許可を得るまで待機**する。この承認をもって最重要方針のブランチ作成確認も兼ねる。
 
 ### フェーズ2：自律実装と検証ループ（承認後〜PR提出まで）
@@ -58,8 +59,8 @@
 
 ### フェーズ3：成果物の提出（PR作成）
 
-- PR本文ドラフトを `<project-root>/docs/ai_work/pr-body-drafts/` に保存する。ディレクトリがなければ先に作成する。
-- Issue/チケットドリブン開発で使うPR本文は、`~/.agent/templates/issue-driven/pr-template.md` を正本として `<project-root>/.github/PULL_REQUEST_TEMPLATE/issue-driven.md` を生成し、それを使って組み立てる。
+- PR本文ドラフトを、GitHub Issue の場合は `~/docs/issue-driven/<repo-name>/<issue-number>/`、Backlog の場合は `~/docs/issue-driven/<project-key>/<ticket-key>/` に保存する。
+- PR本文テンプレートは、`<project-root>/.github/` 配下に既存のPRテンプレートがあればそれを優先する。なければ `~/.agent/templates/issue-driven/pr-template.md` を雛形として直接参照して組み立てる。プロジェクト内への複製・生成は行わない。
 
 ### 自律作業を中断して報告・承認を求める条件（例外）
 
