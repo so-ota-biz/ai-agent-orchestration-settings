@@ -13,23 +13,24 @@
 
 ## 1. 実行対象（Issue/チケットの指定）
 
-設定済みのMCPツール（GitHub/Backlog用）を使用して以下の対象の内容を直接読み取り、仕様理解・設計・テスト・実装・PR作成までを完結させよ。
+設定済みのMCPツール（GitHub/Backlog/Notion用）を使用して以下の対象の内容を直接読み取り、仕様理解・設計・テスト・実装・PR作成までを完結させよ。
 
 **対象の指定:**
-[ここに GitHub URL、Issue番号、または Backlogの課題キーを入力。コピペした内容がある場合はそれも併記]
+[ここに GitHub URL・Issue番号、Backlog課題キー・課題URL、または Notion ページURL・Unique ID を入力。コピペした内容がある場合はそれも併記]
 
 ## 1-a. 成果物とテンプレートの管理規約
 
 - 正本テンプレートは `~/.agent/templates/issue-driven/` から参照する。
 - 成果物の保存先（`~/docs/issue-driven` が存在しなければ許可なく作成する）:
-  - GitHub Issue の場合: `~/docs/issue-driven/<repo-name>/<issue-number>/`
-  - Backlog チケットの場合: `~/docs/issue-driven/<project-key>/<ticket-key>/`
+  - GitHub Issue の場合: `~/docs/issue-driven/github/<repo-name>/<issue-number>/`
+  - Backlog チケットの場合: `~/docs/issue-driven/backlog/<project-key>/<ticket-key>/`
+  - Notion タスクの場合: `~/docs/issue-driven/notion/<page-uuid>/`（Unique ID が渡された場合も `notion-fetch` 等で page UUID を特定してパスに使用する）
 
 ## 2. ワークフロー（フェーズ分割）
 
 ### フェーズ1：調査と設計（要承認）
 
-- MCPツールを用いて対象Issueの最新の本文およびコメントを確認せよ。
+- MCPツールを用いて対象の最新内容を確認せよ。Notion タスクの場合は `notion-fetch`（ページURL/UUID）または `notion-search`（タイトル検索）でタスク内容と page UUID を取得せよ。
 - 現状のコードベースを分析し、変更方針（Design）とテスト計画（Test Plan）を策定せよ。
 - 設計書は `~/.agent/templates/issue-driven/design.md` を元に `<ticket-id>-design.md`、テスト仕様書は `~/.agent/templates/issue-driven/test-plan.md` を元に `<ticket-id>-test-plan.md` として、上記の成果物保存先ディレクトリに生成して記録せよ。ディレクトリがなければ先に作成せよ。
 - 設計書の最低限の見出しは `Design` / `Ticket` / `Background` / `Scope` / `Design Decisions` / `Risks` とする。
